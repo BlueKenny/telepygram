@@ -73,16 +73,16 @@ class Main:
                 DesktopEntry = open(file, "a")
                 DesktopEntry.write("[Desktop Entry]\n")
                 DesktopEntry.write("Name=Telepygram\n")
-                DesktopEntry.write("Path=/home/" + User + "/Telepygram/\n")
+                DesktopEntry.write("Path=/home/" + User + "/telepygram/\n")
                 if User == "pi":# für raspberry
-                    DesktopEntry.write("Exec=qmlscene -qt=qt5-arm-linux-gnueabihf /home/" + User + "/Telepygram/Main.qml\n")
+                    DesktopEntry.write("Exec=qmlscene -qt=qt5-arm-linux-gnueabihf /home/" + User + "/telepygram/Main.qml\n")
                 else:
-                    DesktopEntry.write("Exec=qmlscene /home/" + User + "/Telepygram/Main.qml\n")
+                    DesktopEntry.write("Exec=qmlscene /home/" + User + "/telepygram/Main.qml\n")
                 DesktopEntry.write("Terminal=false\n")
                 DesktopEntry.write("X-Ubuntu-Touch=true\n")
                 DesktopEntry.write("Type=Application\n")
                 DesktopEntry.write("StartupNotify=true\n")
-                DesktopEntry.write("Icon=/home/" + User + "/Telepygram/icon.png\n")
+                DesktopEntry.write("Icon=/home/" + User + "/telepygram/icon.png\n")
                  
                 os.system("chmod +x " + file)
      
