@@ -4,8 +4,8 @@ import QtQuick.Controls 1.1//2.2
 
 ApplicationWindow {
     id: mainWindow
-    height: 2000
-    width: 2000
+    height: 500
+    width: 500
     title: qsTr("Telepygram")
 
 

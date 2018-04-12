@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import pyotherside
 
+import os
+
 try:
     from telethon import TelegramClient, utils
 except:
@@ -20,6 +22,10 @@ class Main:
     def __init__(self):
         print("init")
         
+        self.MakeDesktopEntry()
+        
+        self.Update()  
+        
         api_id = 291651
         api_hash = '0f734eda64f8fa7dea8ed9558fd447e9'
 
@@ -37,7 +43,49 @@ class Main:
 
         if not isAuthorized:
             pyotherside.send("changeFrame", "Phone")
+       
+    def Update(self):
+        print("Update")
+        os.system("git pull &")   
+    
+    def MakeDesktopEntry(self):
+        print("MakeDesktopEntry")
         
+        User = os.popen("echo $USER").readlines()[0].rstrip()
+        
+        Places = []
+        if os.path.exists("/home/phablet"):
+            Places.append("/home/phablet/.local/share/applications")
+            #Places.append("/home/phablet/.config/autostart")
+        else:
+            Places.append(os.popen("echo $(xdg-user-dir DESKTOP)").readlines()[0].rstrip())
+            #Places.append(os.popen("echo $HOME").readlines()[0].rstrip() + "/.config/autostart")
+            Places.append(os.popen("echo $HOME").readlines()[0].rstrip() + "/.local/share/applications")
+        
+        for Desktop in Places:
+            file = Desktop + "/telepygram.desktop"
+            os.system("rm " + file)
+            if not os.path.exists(file):
+                print("Write Desktop Entry")
+                print("User: " + str(User))
+                print("Desktop: " + str(Desktop))
+                print("file: " + str(file))
+                DesktopEntry = open(file, "a")
+                DesktopEntry.write("[Desktop Entry]\n")
+                DesktopEntry.write("Name=Telepygram\n")
+                DesktopEntry.write("Path=/home/" + User + "/Telepygram/\n")
+                if User == "pi":# für raspberry
+                    DesktopEntry.write("Exec=qmlscene -qt=qt5-arm-linux-gnueabihf /home/" + User + "/Telepygram/Main.qml\n")
+                else:
+                    DesktopEntry.write("Exec=qmlscene /home/" + User + "/Telepygram/Main.qml\n")
+                DesktopEntry.write("Terminal=false\n")
+                DesktopEntry.write("X-Ubuntu-Touch=true\n")
+                DesktopEntry.write("Type=Application\n")
+                DesktopEntry.write("StartupNotify=true\n")
+                DesktopEntry.write("Icon=/home/" + User + "/Telepygram/icon.png\n")
+                 
+                os.system("chmod +x " + file)
+     
     def setPhoneNumber(self, phoneNumber):
         self.phoneNumber = phoneNumber
         print("setPhoneNumber(" + str(phoneNumber) + ")")
