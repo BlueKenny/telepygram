@@ -10,18 +10,7 @@ Rectangle {
     Label {
         id: labelSelectTitle
         text: "Telepygram"
-        font.pixelSize: mainWindow.width / 50
+        font.pixelSize: mainWindow.width / 20
         x: mainWindow.width / 2 - width / 2
-    }
-    Button {
-        id: buttonKunden
-        text: "Kunden"
-        width: vars.isPhone ? window.width / 2 : window.width / 5
-        height: window.height / 5
-        x: window.width / 3 - width / 2
-        y: window.height / 5 * 3 - height / 2
-        onClicked: {
-            view.push(frameKundenSuchen)
-        }
     }
 }

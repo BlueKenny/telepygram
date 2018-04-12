@@ -9,8 +9,8 @@ Rectangle {
 
     Label {
         id: labelSelectTitle
-        text: "Telegram have send you a verification code, please ENTER it"
-        font.pixelSize: mainWindow.width / 50
+        text: "Telegram have send you a \n verification code,\n please ENTER it"
+        font.pixelSize: mainWindow.width / 20
         x: window.width / 2 - width / 2
         y: window.height / 5
     }

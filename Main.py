@@ -8,6 +8,7 @@ try:
 except:
     import os
     print("Module Telethon, not installed, starting Installation...")
+    os.system("pip3 install --user typing") # typing is needed in python3.4 for telethon
     os.system("pip3 install --user telethon")
     print("Module Telethon Installed, please restart APP...")
     from telethon import TelegramClient, utils
@@ -43,6 +44,8 @@ class Main:
 
         if not isAuthorized:
             pyotherside.send("changeFrame", "Phone")
+            
+        self.getDialogs()
        
     def Update(self):
         print("Update")
@@ -102,8 +105,10 @@ class Main:
     #authorized_code = input("Please enter code:\n")
     #me = client.sign_in(phone_number, authorized_code)  
     
-    
-#print(client.get_me())
+    def getDialogs(self):
+        print("self.client.get_me(): \n")
+        print(self.client.get_me())
+        print("")       
 
 
 #client.send_message("me", "Telepygram\n")

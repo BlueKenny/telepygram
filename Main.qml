@@ -14,18 +14,6 @@ ApplicationWindow {
         property string testString: ""
     }
 
-    function changeFrame(frameSelect) {
-        if (frameSelect === "Phone") {
-            view.push(framePhoneNumber)
-        }
-        if (frameSelect === "Code") {
-            view.push(framePhoneCode)
-        }
-        if (frameSelect === "Dialogs") {
-            view.push(frameDialogs)
-        }
-    }
-
     function busy(status) {
         busyindicator.visible = status
     }
@@ -81,6 +69,18 @@ ApplicationWindow {
         Component {
             id: framePhoneCode
             PhoneCode {}
+        }
+    }
+
+    function changeFrame(frameSelect) {
+        if (frameSelect === "Phone") {
+            view.push(framePhoneNumber)
+        }
+        if (frameSelect === "Code") {
+            view.push(framePhoneCode)
+        }
+        if (frameSelect === "Dialogs") {
+            view.push(frameDialogs)
         }
     }
 

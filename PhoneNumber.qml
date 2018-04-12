@@ -9,8 +9,8 @@ Rectangle {
 
     Label {
         id: labelSelectTitle
-        text: "Please ENTER your Phone number"
-        font.pixelSize: mainWindow.width / 50
+        text: "Please ENTER your Phone number\nUse the international form"
+        font.pixelSize: mainWindow.width / 20
         x: window.width / 2 - width / 2
         y: window.height / 5
     }
