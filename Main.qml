@@ -18,6 +18,18 @@ ApplicationWindow {
         busyindicator.visible = status
     }
 
+    function changeFrame(frameSelect) {
+        if (frameSelect === "Phone") {
+            view.push(framePhoneNumber)
+        }
+        if (frameSelect === "Code") {
+            view.push(framePhoneCode)
+        }
+        if (frameSelect === "Dialogs") {
+            view.push(frameDialogs)
+        }
+    }
+
     BusyIndicator {
         id: busyindicator
         running: true //image.status === Image.Loadings
@@ -58,7 +70,7 @@ ApplicationWindow {
 
         Component {
             id: frameDialogs
-            Dialogs {}
+            Dialogs {id: dialogsWindow}
         }
 
         Component {
@@ -72,18 +84,6 @@ ApplicationWindow {
         }
     }
 
-    function changeFrame(frameSelect) {
-        if (frameSelect === "Phone") {
-            view.push(framePhoneNumber)
-        }
-        if (frameSelect === "Code") {
-            view.push(framePhoneCode)
-        }
-        if (frameSelect === "Dialogs") {
-            view.push(frameDialogs)
-        }
-    }
-
     Python {
         id: python
         Component.onCompleted: {
@@ -94,7 +94,7 @@ ApplicationWindow {
             setHandler("busy", busy);
             setHandler("changeFrame", changeFrame);
 
-            setHandler("antwortGetDialogs", frameDialogs.antwortGetDialogs);
+            setHandler("antwortGetDialogs", frameDialogs.Dialogs.antwortGetDialogs);
         }
     }
 }

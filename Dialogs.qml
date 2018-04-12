@@ -7,8 +7,10 @@ Rectangle {
     height: mainWindow.height
     width: mainWindow.width
 
+
     function antwortGetDialogs(item) {
-        warn("test")
+        console.warn("test")
+        console.warn("log")
 
         dialogsModel.clear()
 
@@ -27,8 +29,7 @@ Rectangle {
 
     ListView {
         id: listeDialogs
-        y: window.height / 10 * 2
-        focus: true
+        y: window.height / 20
         width: window.width
         height: window.height * 0.5
 
@@ -48,7 +49,7 @@ Rectangle {
                 }
                 Label {
                     text: "Test"
-                    x: window.width / 2
+                    anchors.fill: parent
                 }
             }
         }

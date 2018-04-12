@@ -44,8 +44,10 @@ class Main:
 
         if not isAuthorized:
             pyotherside.send("changeFrame", "Phone")
+            print("pyotherside.send(changeFrame, Phone)")
             
-        self.getDialogs()
+        try: self.getDialogs()
+        except: True
        
     def Update(self):
         print("Update")
@@ -67,7 +69,7 @@ class Main:
         
         for Desktop in Places:
             file = Desktop + "/telepygram.desktop"
-            os.system("rm " + file)
+            #os.system("rm " + file)
             if not os.path.exists(file):
                 print("Write Desktop Entry")
                 print("User: " + str(User))
@@ -94,11 +96,13 @@ class Main:
         print("setPhoneNumber(" + str(phoneNumber) + ")")
         self.client.send_code_request(phoneNumber)
         pyotherside.send("changeFrame", "Code")
+        print("pyotherside.send(changeFrame, Code)")
         
     def setPhoneCode(self, phoneCode):
         print("setPhoneCode(" + str(phoneCode) + ")")
         self.client.sign_in(self.phoneNumber, phoneCode)  
         pyotherside.send("changeFrame", "Dialogs")
+        print("pyotherside.send(changeFrame, Dialogs)")
         
     #phone_number = input("Enter your phone number\nIn international format please\n")
     #client.send_code_request(phone_number)
@@ -118,6 +122,7 @@ class Main:
             Dialoge.append({"name": name})
         print("Dialoge: " + str(Dialoge))
         pyotherside.send("antwortGetDialogs", Dialoge)
+        print("pyotherside.send(antwortGetDialogs, Dialoge)")
 
 
 #client.send_message("me", "Telepygram\n")
