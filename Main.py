@@ -106,9 +106,18 @@ class Main:
     #me = client.sign_in(phone_number, authorized_code)  
     
     def getDialogs(self):
+        print("getDialogs")
+        
         print("self.client.get_me(): \n")
         print(self.client.get_me())
-        print("")       
+        print("")
+        
+        Dialoge = []
+        for dialog in self.client.get_dialogs():
+            name = utils.get_display_name(dialog.entity)
+            Dialoge.append({"name": name})
+        print("Dialoge: " + str(Dialoge))
+        pyotherside.send("antwortGetDialogs", Dialoge)
 
 
 #client.send_message("me", "Telepygram\n")

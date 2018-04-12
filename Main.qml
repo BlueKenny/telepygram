@@ -93,6 +93,8 @@ ApplicationWindow {
             //call('Main.main.phone', [], function (boolStatus) {vars.isPhone = boolStatus});
             setHandler("busy", busy);
             setHandler("changeFrame", changeFrame);
+
+            setHandler("antwortGetDialogs", frameDialogs.antwortGetDialogs);
         }
     }
 }
