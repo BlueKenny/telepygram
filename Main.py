@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import pyotherside
+try: import pyotherside
+except: True
 
 import os
 
