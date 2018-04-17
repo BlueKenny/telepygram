@@ -103,6 +103,7 @@ class Main:
         self.client.sign_in(self.phoneNumber, phoneCode)  
         pyotherside.send("changeFrame", "Dialogs")
         print("pyotherside.send(changeFrame, Dialogs)")
+        self.getDialogs()
         
     #phone_number = input("Enter your phone number\nIn international format please\n")
     #client.send_code_request(phone_number)
