@@ -28,6 +28,9 @@ ApplicationWindow {
         if (frameSelect === "Dialogs") {
             view.push(frameDialogs)
         }
+        if (frameSelect === "Chat") {
+            view.push(frameChat)
+        }
     }
 
     BusyIndicator {
@@ -72,15 +75,17 @@ ApplicationWindow {
             id: frameDialogs
             Dialogs {id: dialogsWindow}
         }
-
         Component {
             id: framePhoneNumber
             PhoneNumber {}
         }
-
         Component {
             id: framePhoneCode
             PhoneCode {}
+        }
+        Component {
+            id: frameChat
+            Chat {}
         }
     }
 
@@ -90,7 +95,7 @@ ApplicationWindow {
             addImportPath(Qt.resolvedUrl('./'));
             importModule('Main', function () {});
 
-            //call('Main.main.phone', [], function (boolStatus) {vars.isPhone = boolStatus});
+            //
             //setHandler("busy", busy);
             setHandler("changeFrame", changeFrame);
 

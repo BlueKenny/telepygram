@@ -6,18 +6,28 @@ import os
 try:
     from telethon import TelegramClient, utils
 except:
-    import os
     print("Module Telethon, not installed, starting Installation...")
     os.system("pip3 install --user typing") # typing is needed in python3.4 for telethon
     os.system("pip3 install --user telethon")
     print("Module Telethon Installed, please restart APP...")
     from telethon import TelegramClient, utils
 
-# Telethon DOCS
-# http://telethon.readthedocs.io/en/latest/extra/basic/creating-a-client.html#creating-a-client
 
-# own infos : client.get_me()
+try: from peewee import *
+except:
+    print("Module Peewee, not installed, starting Installation...")
+    os.system("pip3 install --user peewee")
+    print("Module Peewee Installed, please restart APP...")
+    from peewee import *
 
+
+local_database = SqliteDatabase("data.db")
+
+class Dialogs(Model):
+    username = CharField(primary_key = True)
+    name = CharField()
+    class Meta:
+        database = local_database
 
 class Main:    
     def __init__(self):
@@ -27,6 +37,14 @@ class Main:
         
         self.Update()  
         
+        local_database.connect()   
+        
+        try: local_database.create_tables([Dialogs])
+        except: print("Dialogs table exists in local_database")     
+        
+        #try: migrate(local_migrator.add_column("Artikel", "groesse", CharField(default = "")))
+        #except: print("Artikel:groesse:existiert schon")
+
         api_id = 291651
         api_hash = '0f734eda64f8fa7dea8ed9558fd447e9'
 
@@ -48,7 +66,13 @@ class Main:
             
         try: self.getDialogs()
         except: True
+        
+        self.ChatPartner = ""
        
+    def SetChatPartner(self, name):
+        print("SetChatPartner(" + str(name) + ")")
+        self.ChatPartner = name
+    
     def Update(self):
         print("Update")
         os.system("git pull &")   
@@ -125,6 +149,17 @@ class Main:
         pyotherside.send("antwortGetDialogs", Dialoge)
         print("pyotherside.send(antwortGetDialogs, Dialoge)")
 
+    def sendChat(self, text):
+        self.client.send_message(self.ChatPartner, text)
+    
+    def getChat(self):
+        ChatList = []
+        #ChatList.append({"chattext" : "test"})
+        for message in self.client.get_messages(self.ChatPartner):
+            print(message)
+            if not message.out:
+                ChatList.append({"chattext": message.message})
+        pyotherside.send("antwortGetChat", ChatList, self.ChatPartner)
 
 #client.send_message("me", "Telepygram\n")
 

@@ -49,6 +49,14 @@ Rectangle {
                     x: window.width / 2 - width / 2
                     font.pixelSize: mainWindow.width / 20
                     //anchors.fill: parent
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            python.call('Main.main.SetChatPartner', [name], function () {});
+                            view.push(frameChat)
+                            python.call('Main.main.getChat', [], function () {});
+                        }
+                    }
                 }
             }
         }
