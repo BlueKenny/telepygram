@@ -156,10 +156,10 @@ class Main:
     def getChat(self):
         ChatList = []
         #ChatList.append({"chattext" : "test"})
-        for message in self.client.get_messages(self.ChatPartner):
+        for message in self.client.get_messages(self.ChatPartner, limit=20):
             print(message)
-            if not message.out:
-                ChatList.append({"chattext": message.message})
+            if True:#if not message.out:
+                ChatList.append({"chattext": message.message, "out": message.out})
         pyotherside.send("antwortGetChat", ChatList, self.ChatPartner)
 
 #client.send_message("me", "Telepygram\n")

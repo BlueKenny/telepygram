@@ -18,6 +18,14 @@ Rectangle {
         }
     }
 
+    Timer {
+        interval: 2000; running: true; repeat: true
+        onTriggered: {
+            console.warn("Timer")
+            python.call('Main.main.getChat', [], function () {});
+        }
+    }
+
     Label {
         id: nameChatPartner
         text: "..."
@@ -41,15 +49,18 @@ Rectangle {
             Item {
                 id: itemListe
                 width: window.width
-                height: window.height/6
+                height: window.height / 6
                 MouseArea {
                     anchors.fill: parent
                     onClicked: liste.currentIndex = index
                 }
                 Label {
                     text: chattext
-                    x: window.width / 2 - width / 2
+                    color: out ? "orange" : "blue"
+                    width: mainWindow.width
+                    //x: window.width / 2 - width / 2
                     font.pixelSize: mainWindow.width / 20
+                    horizontalAlignment: out ? Text.AlignRight : Text.AlignLeft
                 }
             }
         }
@@ -61,6 +72,7 @@ Rectangle {
     TextField {
         id: textInput
         width: mainWindow.width
+        height: mainWindow.height / 10
         font.pixelSize: mainWindow.width / 20
         y: mainWindow.height - height
         onAccepted: {
