@@ -110,7 +110,7 @@ class Main:
     #me = client.sign_in(phone_number, authorized_code)  
     
     def getDialogs(self):
-        print("getDialogs")
+        print("getDialogs function in Main.py")
         
         print("self.client.get_me(): \n")
         print(self.client.get_me())

@@ -9,7 +9,6 @@ Rectangle {
 
 
     function antwortGetDialogs(item) {
-        console.warn("test")
         console.warn("log")
 
         dialogsModel.clear()
@@ -31,7 +30,7 @@ Rectangle {
         id: listeDialogs
         y: window.height / 20
         width: window.width
-        height: window.height * 0.5
+        height: window.height * 0.8
 
         ListModel {
             id: dialogsModel
@@ -48,7 +47,8 @@ Rectangle {
                     onClicked: liste.currentIndex = index
                 }
                 Label {
-                    text: "Test"
+                    text: name
+                    x: window.width / 2 - width / 2
                     anchors.fill: parent
                 }
             }
@@ -58,5 +58,15 @@ Rectangle {
         delegate: dialogsDelegate
     }
 
+
+    Python {
+        id: python
+        Component.onCompleted: {
+            addImportPath(Qt.resolvedUrl('./'));
+            importModule('Main', function () {});
+
+            setHandler("antwortGetDialogs", antwortGetDialogs);
+        }
+    }
 
 }

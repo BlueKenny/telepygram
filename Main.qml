@@ -91,10 +91,10 @@ ApplicationWindow {
             importModule('Main', function () {});
 
             //call('Main.main.phone', [], function (boolStatus) {vars.isPhone = boolStatus});
-            setHandler("busy", busy);
+            //setHandler("busy", busy);
             setHandler("changeFrame", changeFrame);
 
-            setHandler("antwortGetDialogs", frameDialogs.Dialogs.antwortGetDialogs);
+            //setHandler("antwortGetDialogs", view.currentItem.antwortGetDialogs);
         }
     }
 }
