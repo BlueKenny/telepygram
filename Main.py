@@ -13,21 +13,21 @@ except:
     from telethon import TelegramClient, utils
 
 
-try: from peewee import *
-except:
-    print("Module Peewee, not installed, starting Installation...")
-    os.system("pip3 install --user peewee")
-    print("Module Peewee Installed, please restart APP...")
-    from peewee import *
+#try: from peewee import *
+#except:
+#    print("Module Peewee, not installed, starting Installation...")
+#    os.system("pip3 install --user peewee")
+#    print("Module Peewee Installed, please restart APP...")
+#    from peewee import *
 
 
-local_database = SqliteDatabase("data.db")
+#local_database = SqliteDatabase("data.db")
 
-class Dialogs(Model):
-    username = CharField(primary_key = True)
-    name = CharField()
-    class Meta:
-        database = local_database
+#class Dialogs(Model):
+#    username = CharField(primary_key = True)
+#    name = CharField()
+#    class Meta:
+#        database = local_database
 
 class Main:    
     def __init__(self):
@@ -37,10 +37,10 @@ class Main:
         
         self.Update()  
         
-        local_database.connect()   
+        #local_database.connect()   
         
-        try: local_database.create_tables([Dialogs])
-        except: print("Dialogs table exists in local_database")     
+        #try: local_database.create_tables([Dialogs])
+        #except: print("Dialogs table exists in local_database")     
         
         #try: migrate(local_migrator.add_column("Artikel", "groesse", CharField(default = "")))
         #except: print("Artikel:groesse:existiert schon")
