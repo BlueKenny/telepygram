@@ -47,6 +47,7 @@ Rectangle {
                 Label {
                     text: name
                     x: window.width / 2 - width / 2
+                    font.pixelSize: mainWindow.width / 20
                     //anchors.fill: parent
                 }
             }
