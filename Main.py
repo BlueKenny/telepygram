@@ -14,21 +14,22 @@ except:
     from telethon import TelegramClient, utils
 
 
-#try: from peewee import *
-#except:
-#    print("Module Peewee, not installed, starting Installation...")
-#    os.system("pip3 install --user peewee")
-#    print("Module Peewee Installed, please restart APP...")
-#    from peewee import *
+try: from peewee import *
+except:
+    print("Module Peewee, not installed, starting Installation...")
+    os.system("pip3 install --user peewee")
+    print("Module Peewee Installed, please restart APP...")
+    from peewee import *
 
 
-#local_database = SqliteDatabase("data.db")
+ldb = SqliteDatabase("data.db")
 
-#class Dialogs(Model):
-#    username = CharField(primary_key = True)
-#    name = CharField()
-#    class Meta:
-#        database = local_database
+class Dialogs(Model):
+    username = CharField(primary_key = True)
+    name = CharField()
+    
+    class Meta:
+        database = ldb
 
 class Main:    
     def __init__(self):
@@ -38,13 +39,13 @@ class Main:
         
         self.Update()  
         
-        #local_database.connect()   
+        ldb.connect()   
         
-        #try: local_database.create_tables([Dialogs])
-        #except: print("Dialogs table exists in local_database")     
+        try: ldb.create_tables([Dialogs])
+        except: print("Dialogs table exists in ldb")     
         
-        #try: migrate(local_migrator.add_column("Artikel", "groesse", CharField(default = "")))
-        #except: print("Artikel:groesse:existiert schon")
+        try: migrate(local_migrator.add_column("Artikel", "groesse", CharField(default = "")))
+        except: print("Artikel:groesse:existiert schon")
 
         api_id = 291651
         api_hash = '0f734eda64f8fa7dea8ed9558fd447e9'
@@ -69,6 +70,7 @@ class Main:
         except: True
         
         self.ChatPartner = ""
+        self.LastChatList = ""
        
     def SetChatPartner(self, name):
         print("SetChatPartner(" + str(name) + ")")
@@ -142,12 +144,23 @@ class Main:
         print(self.client.get_me())
         print("")
         
-        Dialoge = []
-        for dialog in self.client.get_dialogs():
-            name = utils.get_display_name(dialog.entity)
-            Dialoge.append({"name": name})
-        print("Dialoge: " + str(Dialoge))
-        pyotherside.send("antwortGetDialogs", Dialoge)
+        #ldb_connect()
+        #Dialoge = []
+        #AllDialogs = Dialogs.select()
+        #for dialog in AllDialogs:
+        #    Dialoge.append({"name" : dialog.name})
+        #pyotherside.send("antwortGetDialogs", Dialoge)
+        #ldb_close()        
+        
+        try:
+            Dialoge = []
+            for dialog in self.client.get_dialogs():
+                name = utils.get_display_name(dialog.entity)
+                Dialoge.append({"name": name})
+            print("Dialoge: " + str(Dialoge))
+            pyotherside.send("antwortGetDialogs", Dialoge)  
+        except: print("getDialogs download failed")
+        
         print("pyotherside.send(antwortGetDialogs, Dialoge)")
 
     def sendChat(self, text):
@@ -155,12 +168,14 @@ class Main:
     
     def getChat(self):
         ChatList = []
-        #ChatList.append({"chattext" : "test"})
         for message in self.client.get_messages(self.ChatPartner, limit=20):
             print(message)
             if True:#if not message.out:
                 ChatList.append({"chattext": message.message, "out": message.out})
-        pyotherside.send("antwortGetChat", ChatList, self.ChatPartner)
+                
+        if not self.LastChatList == ChatList:
+            pyotherside.send("antwortGetChat", ChatList, self.ChatPartner)
+            self.LastChatList = ChatList
 
 #client.send_message("me", "Telepygram\n")
 
