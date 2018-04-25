@@ -57,10 +57,12 @@ Rectangle {
                 Label {
                     text: chattext
                     color: out ? "orange" : "blue"
-                    width: mainWindow.width
+                    x: 10
+                    width: mainWindow.width - 2 * x
                     //x: window.width / 2 - width / 2
-                    font.pixelSize: mainWindow.width / 20
+                    font.pixelSize: mainWindow.width / 25
                     horizontalAlignment: out ? Text.AlignRight : Text.AlignLeft
+                    wrapMode: Label.WordWrap
                 }
             }
         }
