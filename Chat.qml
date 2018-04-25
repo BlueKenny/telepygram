@@ -49,6 +49,7 @@ Rectangle {
             id: chatDelegate
             Item {
                 id: itemListe
+                x: parent.x
                 width: parent.width
                 height: window.height / 6
                 MouseArea {
@@ -58,6 +59,7 @@ Rectangle {
                 Label {
                     text: chattext
                     color: out ? "orange" : "blue"
+                    x: parent.x
                     width: parent.width
                     font.pixelSize: mainWindow.width / 25
                     horizontalAlignment: out ? Text.AlignRight : Text.AlignLeft
