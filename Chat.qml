@@ -37,7 +37,8 @@ Rectangle {
     ListView {
         id: listeChat
         y: window.height / 10
-        width: window.width
+        x: 10
+        width: window.width - 2 * x
         height: window.height * 0.7
 
         ListModel {
@@ -48,7 +49,7 @@ Rectangle {
             id: chatDelegate
             Item {
                 id: itemListe
-                width: window.width
+                width: parent.width
                 height: window.height / 6
                 MouseArea {
                     anchors.fill: parent
@@ -57,9 +58,7 @@ Rectangle {
                 Label {
                     text: chattext
                     color: out ? "orange" : "blue"
-                    x: 10
-                    width: mainWindow.width - 2 * x
-                    //x: window.width / 2 - width / 2
+                    width: parent.width
                     font.pixelSize: mainWindow.width / 25
                     horizontalAlignment: out ? Text.AlignRight : Text.AlignLeft
                     wrapMode: Label.WordWrap
