@@ -1,0 +1,15 @@
+{
+    "name": "telepygram.bluekenny",
+    "description": "A short description of your app",
+    "architecture": "@CLICK_ARCH@",
+    "title": "Telepygram",
+    "hooks": {
+        "telepygram": {
+            "apparmor": "telepygram.apparmor",
+            "desktop":  "telepygram.desktop"
+        }
+    },
+    "version": "2018.04.30.14",
+    "maintainer": "Zaunz Kenny <bluez@linuxmail.org>",
+    "framework" : "ubuntu-sdk-15.04.5"
+}
