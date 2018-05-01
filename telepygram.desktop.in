@@ -1,7 +1,6 @@
 [Desktop Entry]
 _Name=Telepygram
-Exec=qmlscene -qt=arm-linux-gnueabihf/qt5/qml/QtQuick/Controls/ qml/Main.qml
-#Exec=qmlscene qml/Main.qml
+Exec=qmlscene qml/Main.qml
 Icon=assets/logo.svg
 Terminal=false
 Type=Application

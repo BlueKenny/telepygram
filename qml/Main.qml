@@ -1,8 +1,10 @@
 import QtQuick 2.2
 import io.thp.pyotherside 1.2
 import QtQuick.Controls 1.1//2.2
+//import Ubuntu.Components 1.3
 
 ApplicationWindow {
+//Rectangle {
     id: mainWindow
     height: 500
     width: 500
