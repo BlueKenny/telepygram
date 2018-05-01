@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+import os
+import time
+
+os.popen("clickable.py display-on &")
+
+manifest = open("manifest.json.in", "r").readlines()
+oldversion = manifest[11].split("\"")[3]
+
+time = time.localtime(time.time())
+year = str(time.tm_year)
+month = str(time.tm_mon)
+day = str(time.tm_mday)
+
+version = str(int(oldversion.split(".")[-1]) + 1)
+
+newversion = year + "." + month + "." + day + "." + version
+
+manifest[11] = manifest[11].replace(oldversion, newversion)
+
+os.remove("manifest.json.in")
+
+for eachline in manifest:
+    open("manifest.json.in", "a").write(eachline)
+
+os.system("clickable.py && clickable.py logs")
