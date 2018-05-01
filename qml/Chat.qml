@@ -19,7 +19,7 @@ Rectangle {
     }
 
     Timer {
-        interval: 2000; running: true; repeat: true
+        interval: 5000; running: true; repeat: true
         onTriggered: {
             console.warn("Timer")
             python.call('Main.main.getChat', [], function () {});
@@ -36,6 +36,7 @@ Rectangle {
             onClicked: {
                 view.push(frameDialogs)
                 python.call('Main.main.getDialogs', [], function () {});
+            }
         }
     }
 
