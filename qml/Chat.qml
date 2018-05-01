@@ -31,6 +31,12 @@ Rectangle {
         text: "..."
         x: mainWindow.width / 2 - width / 2
         font.pixelSize: mainWindow.width / 20
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                view.push(frameDialogs)
+                python.call('Main.main.getDialogs', [], function () {});
+        }
     }
 
 

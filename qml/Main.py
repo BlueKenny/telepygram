@@ -11,17 +11,23 @@ if sys.version_info.major == 3:
         print("python Minor version " + str(sys.version_info.minor))
         sys.path.append("modules/lib64/python3.6/site-packages/")
         sys.path.append("modules/lib/python3.6/site-packages/")
+        sys.path.append("qml/modules/lib64/python3.6/site-packages/")
+        sys.path.append("qml/modules/lib/python3.6/site-packages/")
     if sys.version_info.minor == 4:
         print("python Minor version " + str(sys.version_info.minor))
         sys.path.append("modules/lib/python3.4/site-packages/")
-        os.system("ls")
+        sys.path.append("qml/modules/lib/python3.4/site-packages/")
     
-#from telethon import TelegramClient, utils
-from telethon import *
+import typing
+from telethon import TelegramClient, utils
+#from telethon import *
 
 from peewee import *
 
-ldb = SqliteDatabase("data.db")
+data_dir = "/home/phablet/.local/share/telepygram.bluekenny"
+if not os.path.exists(data_dir):
+    os.mkdir(data_dir)
+ldb = SqliteDatabase(data_dir + "/data.db")
 
 class Dialogs(Model):
     username = CharField(primary_key = True)
@@ -43,13 +49,13 @@ class Main:
         try: ldb.create_tables([Dialogs])
         except: print("Dialogs table exists in ldb")     
         
-        try: migrate(local_migrator.add_column("Artikel", "groesse", CharField(default = "")))
-        except: print("Artikel:groesse:existiert schon")
+        #try: migrate(local_migrator.add_column("Artikel", "groesse", CharField(default = "")))
+        #except: print("Artikel:groesse:existiert schon")
 
         api_id = 291651
         api_hash = '0f734eda64f8fa7dea8ed9558fd447e9'
 
-        self.client = TelegramClient('telepygram', api_id, api_hash)
+        self.client = TelegramClient(data_dir + "/telepygram.db", api_id, api_hash)
         self.phoneNumber = ""
 
         isConnected = False
