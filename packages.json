@@ -6,7 +6,8 @@
         "component": "main",
         "packages": [
             "qml-module-qtquick-controls",
-            "python3"
+            "python3",
+            "cython3"
         ]
     }
     ],
@@ -17,7 +18,8 @@
         "component": "main",
         "packages": [
             "qml-module-qtquick-controls",
-            "python3"
+            "python3",
+            "python3-pip"
         ]
     }
     ]

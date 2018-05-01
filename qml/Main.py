@@ -3,24 +3,23 @@ try: import pyotherside
 except: True
 
 import os
+import sys
 
-try:
-    from telethon import TelegramClient, utils
-except:
-    print("Module Telethon, not installed, starting Installation...")
-    os.system("pip3 install --user typing") # typing is needed in python3.4 for telethon
-    os.system("pip3 install --user telethon")
-    print("Module Telethon Installed, please restart APP...")
-    from telethon import TelegramClient, utils
+if sys.version_info.major == 3:
+    print("python Major version " + str(sys.version_info.major))
+    if sys.version_info.minor == 6:
+        print("python Minor version " + str(sys.version_info.minor))
+        sys.path.append("modules/lib64/python3.6/site-packages/")
+        sys.path.append("modules/lib/python3.6/site-packages/")
+    if sys.version_info.minor == 4:
+        print("python Minor version " + str(sys.version_info.minor))
+        sys.path.append("modules/lib/python3.4/site-packages/")
+        os.system("ls")
+    
+#from telethon import TelegramClient, utils
+from telethon import *
 
-
-try: from peewee import *
-except:
-    print("Module Peewee, not installed, starting Installation...")
-    os.system("pip3 install --user peewee")
-    print("Module Peewee Installed, please restart APP...")
-    from peewee import *
-
+from peewee import *
 
 ldb = SqliteDatabase("data.db")
 
@@ -35,9 +34,9 @@ class Main:
     def __init__(self):
         print("init")
         
-        self.MakeDesktopEntry()
+        #self.MakeDesktopEntry()
         
-        self.Update()  
+        #self.Update()  
         
         ldb.connect()   
         

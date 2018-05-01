@@ -1,7 +1,7 @@
 [Desktop Entry]
 _Name=Telepygram
 Exec=qmlscene qml/Main.qml
-Icon=assets/logo.svg
+Icon=assets/logo.jpg
 Terminal=false
 Type=Application
 X-Ubuntu-Touch=true
