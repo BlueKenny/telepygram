@@ -16,10 +16,12 @@ Rectangle {
     }
     TextField {
         id: textPhoneNumberNum
-        width: window.width / 3
-        height: window.height / 15
+        width: window.width
+        height: window.height / 12
         x: window.width / 2 - width / 2
         y: window.height / 2 - height / 2
+        font.pixelSize: mainWindow.width / 20
+        horizontalAlignment: Text.AlignCenter
         onAccepted: {
             python.call('Main.main.setPhoneCode', [text], function () {});
         }

@@ -38,50 +38,85 @@ class Dialogs(Model):
     
     class Meta:
         database = ldb
+        
+class Chats(Model):
+    identification = CharField(primary_key = True)
+    user_id = CharField()
+    text = CharField()
+    out = BooleanField()    
+    
+    class Meta:
+        database = ldb
 
 class Main:    
     def __init__(self):
         print("init")
         
-        ldb.connect()   
+        version = "5"
+        if not os.path.exists(data_dir + "/version"):
+            print("Writing new database")
+            open(data_dir + "/version", "w").write("0")
+        checkversion = str(open(data_dir + "/version", "r").readlines()[0])
+        if not version == checkversion:   
+            print("Database version is incompatible with new version, recreating it")
+            os.remove(data_dir + "/data.db")
+            open(data_dir + "/version", "w").write(version)     
         
+        ldb.connect()   
+                
+        try: ldb.create_tables([Info])
+        except: print("Info table exists in ldb")  
         try: ldb.create_tables([Dialogs])
-        except: print("Dialogs table exists in ldb")     
+        except: print("Dialogs table exists in ldb")    
+        try: ldb.create_tables([Chats])
+        except: print("Chats table exists in ldb")     
         
         #try: migrate(local_migrator.add_column("Artikel", "groesse", CharField(default = "")))
         #except: print("Artikel:groesse:existiert schon")
            
         ldb.close()
-         
-        #self.tryConnect()
         
-        try: self.getDialogs()
-        except: True
+        #pyotherside.send("changeFrame", "Dialogs")
+
+        self.getDialogs()
+                         
+        self.tryConnect()
         
         self.ChatPartner = ""
+        self.ChatPartnerID = ""
+        self.ChatForceReload = False
         self.LastChatList = ""
+        self.LastDialogList = ""
+        
        
     def tryConnect(self):
+        print("tryConnect")    
+    
         api_id = 291651
         api_hash = '0f734eda64f8fa7dea8ed9558fd447e9'
 
-        self.client = TelegramClient(data_dir + "/telepygram.db", api_id, api_hash)
-        self.phoneNumber = ""
+        try:
+            self.client = TelegramClient(data_dir + "/telepygram.db", api_id, api_hash)
+            self.phoneNumber = ""
 
-        print("Waiting for connection")
-        isConnected = self.client.connect()
-        print("Connection: " + str(isConnected))
+            print("Waiting for connection")
+            isConnected = self.client.connect()
+            print("Connection: " + str(isConnected))
 
-        isAuthorized = self.client.is_user_authorized()
-        print("Authorized: " + str(isAuthorized))
+            isAuthorized = self.client.is_user_authorized()
+            print("Authorized: " + str(isAuthorized))
 
-        if not isAuthorized:
-            pyotherside.send("changeFrame", "Phone")
-            print("pyotherside.send(changeFrame, Phone)")
+            if not isAuthorized:
+                pyotherside.send("changeFrame", "Phone")
+                print("pyotherside.send(changeFrame, Phone)")
+        except: print("tryConnect ERROR No Network?")    
     
-    def SetChatPartner(self, name):
-        print("SetChatPartner(" + str(name) + ")")
+    def SetChatPartner(self, name, user_id):
+        print("SetChatPartner(name: " + str(name) + ", user_id: " + str(user_id) + ")")
         self.ChatPartner = name
+        self.ChatPartnerID = user_id
+        self.ChatForceReload = True
+        self.getChat()
      
     def setPhoneNumber(self, phoneNumber):
         self.phoneNumber = phoneNumber
@@ -96,23 +131,19 @@ class Main:
         pyotherside.send("changeFrame", "Dialogs")
         print("pyotherside.send(changeFrame, Dialogs)")
         self.getDialogs()
-        
-    #phone_number = input("Enter your phone number\nIn international format please\n")
-    #client.send_code_request(phone_number)
-    #authorized_code = input("Please enter code:\n")
-    #me = client.sign_in(phone_number, authorized_code)  
     
     def getDialogs(self):
         print("getDialogs function in Main.py")
         
-        ldb.connect()
         Dialoge = []
+        try: ldb.connect()
+        except: True
         AllDialogs = Dialogs.select()
-        for dialog in AllDialogs:
-            Dialoge.append({"name" : dialog.name})
         ldb.close() 
+        for dialog in AllDialogs:
+            Dialoge.append({"name" : dialog.name, "user_id" : dialog.identification})
         
-        print("pyotherside.send(antwortGetDialogs, Dialoge)") 
+        print("pyotherside.send(antwortGetDialogs, " + str(Dialoge) + ")") 
         pyotherside.send("antwortGetDialogs", Dialoge)  
     
     def reloadDialogs(self):
@@ -124,51 +155,65 @@ class Main:
         
         self.tryConnect()
         
-        ldb.connect()    
-        
         if True:#try:
             Dialoge = []
             for dialog in self.client.get_dialogs():
                 dialog_name = utils.get_display_name(dialog.entity)
                 dialog_identification = dialog.entity.id
-                print(dialog_identification)
+                #print(dialog_identification)
                 Dialoge.append({"name": dialog_name})
-                print("dialog.name " + str(dialog.name))
+                #print("dialog.name " + str(dialog.name))
+                try: ldb.connect()
+                except: True
                 query = Dialogs.select().where((Dialogs.name == str(dialog_name)))
+                ldb.close()
                 if not query.exists():
                     print("create Dialog entry")
                     NewDialog = Dialogs.create(name = dialog_name, identification = dialog_identification)
                     NewDialog.save()
                 
-            print("Dialoge: " + str(Dialoge))
+            #print("Dialoge: " + str(Dialoge))
+            if not self.LastDialogList == Dialoge:
+                self.LastDialogList = Dialoge
+                self.getDialogs()
+                
             
         #except: print("getDialogs download failed")
-        
-        ldb.close()    
 
     def sendChat(self, text):
         self.client.send_message(self.ChatPartner, text)
     
     def getChat(self):
+        print("getChat")
         ChatList = []
-        for message in self.client.get_messages(self.ChatPartner, limit=20):
-            print(message)
-            if True:#if not message.out:
-                ChatList.append({"chattext": message.message, "out": message.out})
-                
-        if not self.LastChatList == ChatList:
+        try: ldb.connect()
+        except: True
+        AllChats = Chats.select().where(Chats.user_id == self.ChatPartnerID)
+        ldb.close()   
+        for message in AllChats:    
+            ChatList.append({"chattext": message.text, "out": message.out})
+        
+        if not self.LastChatList == ChatList or self.ChatForceReload:
             pyotherside.send("antwortGetChat", ChatList, self.ChatPartner)
-            self.LastChatList = ChatList
-
-#client.send_message("me", "Telepygram\n")
-
-
-#for dialog in client.get_dialogs(limit=20):
-#    print("\n")
-#    print(utils.get_display_name(dialog.entity), dialog.message) # dialog.message prints the last mesage
-#    for message in client.get_messages(dialog.entity):
-#        print("\n")
-#        print(message)
-
+            self.LastChatList = ChatList 
+            self.ChatForceReload = False
+        
+    def reloadChat(self):
+        try:
+            for message in self.client.get_messages(self.ChatPartner, limit=100):
+                try: ldb.connect()
+                except: True
+                query = Chats.select().where(Chats.identification == str(message.id))
+                ldb.close()
+                if not query.exists():
+                    print(message)
+                    print(" ")
+                
+                    NewChat = Chats.create(identification = message.id, user_id = self.ChatPartnerID, text = message.message, out = message.out)
+                    NewChat.save()
+                    self.getChat() 
+        except:
+            print("reloadChat Error")  
+            self.tryConnect()  
 
 main = Main()

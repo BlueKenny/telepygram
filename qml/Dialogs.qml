@@ -16,14 +16,6 @@ Rectangle {
         }
     }
 
-    Timer {
-        interval: 5000; running: true; repeat: true
-        onTriggered: {
-            console.warn("Timer")
-            python.call('Main.main.reloadDialogs', [], function () {});
-        }
-    }
-
     Label {
         id: labelSelectTitle
         text: "Telepygram"
@@ -60,11 +52,15 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            python.call('Main.main.SetChatPartner', [name], function () {});
+                            python.call('Main.main.SetChatPartner', [name, user_id], function () {});
+                            timeDialogs.running = false
+                            timeChat.running = true
                             view.push(frameChat)
-                            python.call('Main.main.getChat', [], function () {});
                         }
                     }
+                }
+                Item {
+                    property string userID : user_id
                 }
             }
         }

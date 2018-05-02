@@ -22,16 +22,41 @@ ApplicationWindow {
 
     function changeFrame(frameSelect) {
         if (frameSelect === "Phone") {
+            timeDialogs.running = false
+            timeChat.running = false
             view.push(framePhoneNumber)
         }
         if (frameSelect === "Code") {
+            timeDialogs.running = false
+            timeChat.running = false
             view.push(framePhoneCode)
         }
         if (frameSelect === "Dialogs") {
+            timeDialogs.running = true
+            timeChat.running = false
             view.push(frameDialogs)
         }
         if (frameSelect === "Chat") {
+            timeDialogs.running = false
+            timeChat.running = true
             view.push(frameChat)
+        }
+    }
+
+    Timer {
+        id: timeDialogs
+        interval: 2000; running: true; repeat: true
+        onTriggered: {
+            console.warn("timeDialogs")
+            python.call('Main.main.reloadDialogs', [], function () {});
+        }
+    }
+    Timer {
+        id: timeChat
+        interval: 2000; running: false; repeat: true
+        onTriggered: {
+            console.warn("timeChat")
+            python.call('Main.main.reloadChat', [], function () {});
         }
     }
 

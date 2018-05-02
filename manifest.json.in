@@ -9,7 +9,7 @@
             "desktop":  "telepygram.desktop"
         }
     },
-    "version": "2018.5.2.118",
+    "version": "2018.5.2.127",
     "maintainer": "Zaunz Kenny <bluez@linuxmail.org>",
     "framework" : "ubuntu-sdk-15.04.5"
 }
