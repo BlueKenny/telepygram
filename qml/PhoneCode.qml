@@ -21,7 +21,8 @@ Rectangle {
         x: window.width / 2 - width / 2
         y: window.height / 2 - height / 2
         font.pixelSize: mainWindow.width / 20
-        horizontalAlignment: Text.AlignCenter
+        inputMethodHints: Qt.ImhDigitsOnly
+        horizontalAlignment: TextEdit.AlignHCenter
         onAccepted: {
             python.call('Main.main.setPhoneCode', [text], function () {});
         }

@@ -59,7 +59,7 @@ class Main:
         checkversion = str(open(data_dir + "/version", "r").readlines()[0])
         if not version == checkversion:   
             print("Database version is incompatible with new version, recreating it")
-            os.remove(data_dir + "/data.db")
+            if os.path.exists(data_dir + "/data.db"): os.remove(data_dir + "/data.db")
             open(data_dir + "/version", "w").write(version)     
         
         ldb.connect()   
@@ -199,10 +199,12 @@ class Main:
             self.ChatForceReload = False
         
     def reloadChat(self):
+        print("reloadChat")
         try:
-            for message in self.client.get_messages(self.ChatPartner, limit=100):
+            for message in self.client.get_messages(self.ChatPartner, limit=1):
                 try: ldb.connect()
                 except: True
+                print("message.id " + str(message.id))
                 query = Chats.select().where(Chats.identification == str(message.id))
                 ldb.close()
                 if not query.exists():

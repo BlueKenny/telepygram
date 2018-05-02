@@ -45,7 +45,7 @@ ApplicationWindow {
 
     Timer {
         id: timeDialogs
-        interval: 2000; running: true; repeat: true
+        interval: 5000; running: true; repeat: true
         onTriggered: {
             console.warn("timeDialogs")
             python.call('Main.main.reloadDialogs', [], function () {});
@@ -53,7 +53,7 @@ ApplicationWindow {
     }
     Timer {
         id: timeChat
-        interval: 2000; running: false; repeat: true
+        interval: 5000; running: false; repeat: true
         onTriggered: {
             console.warn("timeChat")
             python.call('Main.main.reloadChat', [], function () {});

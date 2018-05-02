@@ -21,7 +21,9 @@ Rectangle {
         x: window.width / 2 - width / 2
         y: window.height / 2 - height / 2
         font.pixelSize: mainWindow.width / 20
-        horizontalAlignment: Text.AlignCenter
+        inputMethodHints: Qt.ImhDigitsOnly
+        horizontalAlignment: TextEdit.AlignHCenter
+
         text: "+"
         onAccepted: {
             python.call('Main.main.setPhoneNumber', [text], function () {});
