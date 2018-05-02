@@ -2,6 +2,9 @@
 try: import pyotherside
 except: True
 
+import getpass
+
+
 import os
 import sys
 
@@ -24,13 +27,13 @@ from telethon import TelegramClient, utils
 
 from peewee import *
 
-data_dir = "/home/phablet/.local/share/telepygram.bluekenny"
+data_dir = "/home/" + getpass.getuser() + "/.local/share/telepygram.bluekenny"
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
 ldb = SqliteDatabase(data_dir + "/data.db")
 
 class Dialogs(Model):
-    username = CharField(primary_key = True)
+    identification = CharField(primary_key = True)
     name = CharField()
     
     class Meta:
@@ -40,10 +43,6 @@ class Main:
     def __init__(self):
         print("init")
         
-        #self.MakeDesktopEntry()
-        
-        #self.Update()  
-        
         ldb.connect()   
         
         try: ldb.create_tables([Dialogs])
@@ -51,18 +50,27 @@ class Main:
         
         #try: migrate(local_migrator.add_column("Artikel", "groesse", CharField(default = "")))
         #except: print("Artikel:groesse:existiert schon")
-
+           
+        ldb.close()
+         
+        #self.tryConnect()
+        
+        try: self.getDialogs()
+        except: True
+        
+        self.ChatPartner = ""
+        self.LastChatList = ""
+       
+    def tryConnect(self):
         api_id = 291651
         api_hash = '0f734eda64f8fa7dea8ed9558fd447e9'
 
         self.client = TelegramClient(data_dir + "/telepygram.db", api_id, api_hash)
         self.phoneNumber = ""
 
-        isConnected = False
-        while not isConnected:
-            print("Waiting for connection")
-            isConnected = self.client.connect()
-            print("Connection: " + str(isConnected))
+        print("Waiting for connection")
+        isConnected = self.client.connect()
+        print("Connection: " + str(isConnected))
 
         isAuthorized = self.client.is_user_authorized()
         print("Authorized: " + str(isAuthorized))
@@ -70,58 +78,10 @@ class Main:
         if not isAuthorized:
             pyotherside.send("changeFrame", "Phone")
             print("pyotherside.send(changeFrame, Phone)")
-            
-        try: self.getDialogs()
-        except: True
-        
-        self.ChatPartner = ""
-        self.LastChatList = ""
-       
+    
     def SetChatPartner(self, name):
         print("SetChatPartner(" + str(name) + ")")
         self.ChatPartner = name
-    
-    def Update(self):
-        print("Update")
-        os.system("git pull &")   
-    
-    def MakeDesktopEntry(self):
-        print("MakeDesktopEntry")
-        
-        User = os.popen("echo $USER").readlines()[0].rstrip()
-        
-        Places = []
-        if os.path.exists("/home/phablet"):
-            Places.append("/home/phablet/.local/share/applications")
-            #Places.append("/home/phablet/.config/autostart")
-        else:
-            Places.append(os.popen("echo $(xdg-user-dir DESKTOP)").readlines()[0].rstrip())
-            #Places.append(os.popen("echo $HOME").readlines()[0].rstrip() + "/.config/autostart")
-            Places.append(os.popen("echo $HOME").readlines()[0].rstrip() + "/.local/share/applications")
-        
-        for Desktop in Places:
-            file = Desktop + "/telepygram.desktop"
-            #os.system("rm " + file)
-            if not os.path.exists(file):
-                print("Write Desktop Entry")
-                print("User: " + str(User))
-                print("Desktop: " + str(Desktop))
-                print("file: " + str(file))
-                DesktopEntry = open(file, "a")
-                DesktopEntry.write("[Desktop Entry]\n")
-                DesktopEntry.write("Name=Telepygram\n")
-                DesktopEntry.write("Path=/home/" + User + "/telepygram/\n")
-                if User == "pi":# für raspberry
-                    DesktopEntry.write("Exec=qmlscene -qt=qt5-arm-linux-gnueabihf /home/" + User + "/telepygram/Main.qml\n")
-                else:
-                    DesktopEntry.write("Exec=qmlscene /home/" + User + "/telepygram/Main.qml\n")
-                DesktopEntry.write("Terminal=false\n")
-                DesktopEntry.write("X-Ubuntu-Touch=true\n")
-                DesktopEntry.write("Type=Application\n")
-                DesktopEntry.write("StartupNotify=true\n")
-                DesktopEntry.write("Icon=/home/" + User + "/telepygram/icon.png\n")
-                 
-                os.system("chmod +x " + file)
      
     def setPhoneNumber(self, phoneNumber):
         self.phoneNumber = phoneNumber
@@ -145,28 +105,46 @@ class Main:
     def getDialogs(self):
         print("getDialogs function in Main.py")
         
-        print("self.client.get_me(): \n")
-        print(self.client.get_me())
-        print("")
+        ldb.connect()
+        Dialoge = []
+        AllDialogs = Dialogs.select()
+        for dialog in AllDialogs:
+            Dialoge.append({"name" : dialog.name})
+        ldb.close() 
         
-        #ldb_connect()
-        #Dialoge = []
-        #AllDialogs = Dialogs.select()
-        #for dialog in AllDialogs:
-        #    Dialoge.append({"name" : dialog.name})
-        #pyotherside.send("antwortGetDialogs", Dialoge)
-        #ldb_close()        
+        print("pyotherside.send(antwortGetDialogs, Dialoge)") 
+        pyotherside.send("antwortGetDialogs", Dialoge)  
+    
+    def reloadDialogs(self):
+        print("reloadDialogs function in Main.py")
         
-        try:
+        #print("self.client.get_me(): \n")
+        #print(self.client.get_me())
+        #print("")
+        
+        self.tryConnect()
+        
+        ldb.connect()    
+        
+        if True:#try:
             Dialoge = []
             for dialog in self.client.get_dialogs():
-                name = utils.get_display_name(dialog.entity)
-                Dialoge.append({"name": name})
+                dialog_name = utils.get_display_name(dialog.entity)
+                dialog_identification = dialog.entity.id
+                print(dialog_identification)
+                Dialoge.append({"name": dialog_name})
+                print("dialog.name " + str(dialog.name))
+                query = Dialogs.select().where((Dialogs.name == str(dialog_name)))
+                if not query.exists():
+                    print("create Dialog entry")
+                    NewDialog = Dialogs.create(name = dialog_name, identification = dialog_identification)
+                    NewDialog.save()
+                
             print("Dialoge: " + str(Dialoge))
-            pyotherside.send("antwortGetDialogs", Dialoge)  
-        except: print("getDialogs download failed")
+            
+        #except: print("getDialogs download failed")
         
-        print("pyotherside.send(antwortGetDialogs, Dialoge)")
+        ldb.close()    
 
     def sendChat(self, text):
         self.client.send_message(self.ChatPartner, text)

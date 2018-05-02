@@ -16,6 +16,14 @@ Rectangle {
         }
     }
 
+    Timer {
+        interval: 5000; running: true; repeat: true
+        onTriggered: {
+            console.warn("Timer")
+            python.call('Main.main.reloadDialogs', [], function () {});
+        }
+    }
+
     Label {
         id: labelSelectTitle
         text: "Telepygram"
