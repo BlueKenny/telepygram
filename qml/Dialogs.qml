@@ -61,16 +61,25 @@ Rectangle {
                     font.pixelSize: mainWindow.width / 25
                 }
 
+                Image {
+                    id: profileImage
+                    source: data_dir + "/Pictures/Profiles/" + chat_identification + ".jpg"
+                    asynchronous: true
+                    height: parent.height
+                    width: parent.width / 4
+                    x: progresscircle.x + progresscircle.width
+                }
+
                 Label {
                     text: name
-                    x: window.width / 2 - width / 2
+                    x: profileImage.x + profileImage.width//window.width / 2 - width / 2
                     y: parent.height / 2 - height / 2
                     font.pixelSize: mainWindow.width / 20
                     //anchors.fill: parent
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            python.call('Main.main.SetChatPartner', [name, user_id], function () {});
+                            python.call('Main.main.SetChatPartner', [name, chat_identification], function () {});
                             timeDialogs.running = false
                             timeChat.running = true
                             view.push(frameChat)
@@ -78,7 +87,7 @@ Rectangle {
                     }
                 }
                 Item {
-                    property string userID : user_id
+                    property string chatIdentification : chat_identification
                 }
             }
         }

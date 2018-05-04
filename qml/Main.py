@@ -45,9 +45,13 @@ class Dialogs(Model):
         
 class Chats(Model):
     identification = CharField(primary_key = True)
+    chat_id = CharField()
     user_id = CharField()
+    user_name = CharField()
     text = CharField()
-    out = BooleanField()    
+    out = BooleanField()  
+    media = CharField()  
+    total_message = CharField()
     
     class Meta:
         database = ldb
@@ -56,7 +60,7 @@ class Main:
     def __init__(self):
         print("init")
         
-        version = "7"
+        version = "14"
         if not os.path.exists(data_dir + "/version"):
             print("Writing new database")
             open(data_dir + "/version", "w").write("0")
@@ -79,13 +83,16 @@ class Main:
 
         self.getDialogs()
              
-        t = threading.Thread(target = self.tryConnect)
+        threading.Thread(target = self.tryConnect).start()
         
         self.ChatPartner = ""
         self.ChatPartnerID = ""
         self.ChatForceReload = False
         self.LastChatList = ""
         self.LastDialogList = ""
+        
+        if not os.path.exists(data_dir + "/Pictures"): os.mkdir(data_dir + "/Pictures")
+        if not os.path.exists(data_dir + "/Pictures/Profiles"): os.mkdir(data_dir + "/Pictures/Profiles")
         
        
     def tryConnect(self):
@@ -110,10 +117,10 @@ class Main:
                 print("pyotherside.send(changeFrame, Phone)")
         except: print("tryConnect ERROR No Network?")    
     
-    def SetChatPartner(self, name, user_id):
-        print("SetChatPartner(name: " + str(name) + ", user_id: " + str(user_id) + ")")
+    def SetChatPartner(self, name, id):
+        print("SetChatPartner(name: " + str(name) + ", " + str(id) + ")")
         self.ChatPartner = name
-        self.ChatPartnerID = user_id
+        self.ChatPartnerID = id
         self.ChatForceReload = True
         self.getChat()
      
@@ -155,8 +162,11 @@ class Main:
                     lastonlinetime = ""
                     if "UserStatusOffline" in dialog.status:
                         lastonlinetime = modules.BlueFunc.ElapsedTime(dialog.status.split("UserStatusOffline(was_online=datetime.utcfromtimestamp(")[-1].replace("))", ""))
+            # t = threading.Thread(target = self.tryConnect)
+            #  download_profile_photo(entity, file=None, download_big=True)
+                        
             
-            Dialoge.append({"name" : dialog.name, "user_id" : dialog.identification, "status" : user_status, "timestamp" : lastonlinetime})
+            Dialoge.append({"name" : dialog.name, "chat_identification" : dialog.identification, "status" : user_status, "timestamp" : lastonlinetime, "data_dir" : data_dir})
         
         print("pyotherside.send(antwortGetDialogs, " + str(Dialoge) + ")") 
         pyotherside.send("antwortGetDialogs", Dialoge)  
@@ -173,30 +183,37 @@ class Main:
         if True:#try:
             Dialoge = []
             for dialog in self.client.get_dialogs():
+            
                 dialog_name = utils.get_display_name(dialog.entity)
                 dialog_identification = dialog.entity.id
                 try: dialog_status = dialog.entity.status
-                except: dialog_status = "0"
+                except: dialog_status = "0"  
                 
-                #print(" ")
-                #print(dialog_name)
-                #print(dialog.entity)
-                #print(" ")
+                print(" ")
+                print(dialog_name)
+                print(dialog.entity)
+                print(" ")
                 
                 Dialoge.append({"name": dialog_name})
-                #print("dialog.name " + str(dialog.name))
                 try: ldb.connect()
                 except: True
                 query = Dialogs.select().where((Dialogs.identification == str(dialog_identification)))
                 ldb.close()
                 if not query.exists():
                     print("create Dialog entry " + dialog_name)
+                    threading.Thread(target = self.downloadProfilePhoto, args = [dialog.entity]).start()
                     NewDialog = Dialogs.create(name = dialog_name, identification = dialog_identification, status = dialog_status)
                     NewDialog.save()
                 else:
+                    # ToDO Test if changes
+                    
                     print("Dialog Changed " + dialog_name)
                     ChangedDialog = Dialogs(name = dialog_name, identification = dialog_identification, status = dialog_status)
                     ChangedDialog.save()
+                    
+                    # if no Picture
+                    if not os.path.exists(data_dir + "/Pictures/Profiles/" + str(dialog_identification) + ".jpg"):
+                        threading.Thread(target = self.downloadProfilePhoto, args = [dialog.entity]).start()
                 
             #print("Dialoge: " + str(Dialoge))
             if not self.LastDialogList == Dialoge:
@@ -205,6 +222,10 @@ class Main:
                 
             
         #except: print("getDialogs download failed")
+    def downloadProfilePhoto(self, Entity):
+        print("Start downloadProfilePhoto")
+        Image = self.client.download_profile_photo(Entity, file=data_dir + "/Pictures/Profiles/" + str(Entity.id), download_big=True)
+        print("Image: " + str(Image))
 
     def sendChat(self, text):
         self.client.send_message(self.ChatPartner, text)
@@ -214,10 +235,10 @@ class Main:
         ChatList = []
         try: ldb.connect()
         except: True
-        AllChats = Chats.select().where(Chats.user_id == self.ChatPartnerID)
+        AllChats = Chats.select().where(Chats.chat_id == self.ChatPartnerID).order_by(Chats.identification)
         ldb.close()   
         for message in AllChats:    
-            ChatList.append({"chattext": message.text, "out": message.out})
+            ChatList.append({"chattext": message.text, "out": message.out, "sender" : message.user_name})
         
         if not self.LastChatList == ChatList or self.ChatForceReload:
             pyotherside.send("antwortGetChat", ChatList, self.ChatPartner)
@@ -228,7 +249,7 @@ class Main:
         
     def reloadChat(self):
         print("reloadChat")
-        try:
+        if True:#try:
             for message in self.client.get_messages(self.ChatPartner, limit=10):
                 try: ldb.connect()
                 except: True
@@ -238,11 +259,23 @@ class Main:
                 if not query.exists():
                     print(message)
                     print(" ")
-                
-                    NewChat = Chats.create(identification = message.id, user_id = self.ChatPartnerID, text = message.message, out = message.out)
+                    
+                    print("User Name :" + str(self.client.get_entity(message.from_id)))
+                    names = []
+                    user_firstname = str(self.client.get_entity(message.from_id).first_name)
+                    user_lastname = str(self.client.get_entity(message.from_id).last_name)
+                    if not user_firstname == "None": names.append(user_firstname)
+                    if not user_lastname == "None": names.append(user_lastname)
+                    username = " ".join(names)
+                    
+                    message_media = str(message.media)
+                    print("message_media: " + str(message_media))
+                    # download_media(message, file=None, progress_callback=None)
+                    
+                    NewChat = Chats.create(identification = message.id, chat_id = self.ChatPartnerID, user_name = username, user_id = message.from_id, text = message.message, out = message.out, media = message_media ,total_message = message)
                     NewChat.save()
                     self.getChat() 
-        except:
+        if False:#except:
             print("reloadChat Error")  
             self.tryConnect()  
 

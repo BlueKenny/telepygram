@@ -16,7 +16,6 @@ Rectangle {
         for (var i=0; i<item.length; i++) {
             chatModel.append(item[i]);
             listeChat.currentIndex = listeChat.count - 1
-            console.warn(listeChat.currentIndex)
         }
 
 
@@ -67,14 +66,15 @@ Rectangle {
                 id: itemListe
                 x: parent.x
                 width: parent.width
-                height: window.height / 6
+                height: textChatText.height + window.height / 20
 
                 MouseArea {
                     anchors.fill: parent
                     onClicked: liste.currentIndex = index
                 }
                 Text {
-                    text: chattext
+                    id: textChatText
+                    text: sender + ":\n" + chattext
                     color: out ? "orange" : "blue"
                     x: parent.x
                     width: parent.width
