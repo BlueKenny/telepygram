@@ -259,6 +259,9 @@ class Main:
                 if not query.exists():
                     print(message)
                     print(" ")
+
+                    message_text = message.message
+                    if message_text == None: message_text = " "                  
                     
                     print("User Name :" + str(self.client.get_entity(message.from_id)))
                     names = []
@@ -268,11 +271,12 @@ class Main:
                     if not user_lastname == "None": names.append(user_lastname)
                     username = " ".join(names)
                     
-                    message_media = str(message.media)
+                    try: message_media = str(message.media)
+                    except: message_media = " "
                     print("message_media: " + str(message_media))
                     # download_media(message, file=None, progress_callback=None)
                     
-                    NewChat = Chats.create(identification = message.id, chat_id = self.ChatPartnerID, user_name = username, user_id = message.from_id, text = message.message, out = message.out, media = message_media ,total_message = message)
+                    NewChat = Chats.create(identification = message.id, chat_id = self.ChatPartnerID, user_name = username, user_id = message.from_id, text = message_text, out = message.out, media = message_media ,total_message = message)
                     NewChat.save()
                     self.getChat() 
         if False:#except:
