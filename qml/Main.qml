@@ -83,14 +83,14 @@ ApplicationWindow {
                     property: "opacity"
                     from: 0
                     to: 1
-                    duration: 300
+                    duration: 200
                 }
                 PropertyAnimation {
                     target: exitItem
                     property: "opacity"
                     from: 1
                     to: 0
-                    duration: 300
+                    duration: 200
                 }
             }
         }

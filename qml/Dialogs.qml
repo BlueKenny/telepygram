@@ -44,9 +44,27 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: liste.currentIndex = index
                 }
+                ProgressCircle {
+                    id: progresscircle
+                    y: parent.height / 2 - height / 2
+                        size: parent.width / 10
+                        colorCircle: status
+                        colorBackground: "#E6E6E6"
+                        arcBegin: 0
+                        arcEnd: 360
+                        lineWidth: size / 10
+                    }
+                Label {
+                    x: progresscircle.x + progresscircle.width / 2 - width / 2
+                    y: parent.height / 2 - height / 2
+                    text: timestamp
+                    font.pixelSize: mainWindow.width / 25
+                }
+
                 Label {
                     text: name
                     x: window.width / 2 - width / 2
+                    y: parent.height / 2 - height / 2
                     font.pixelSize: mainWindow.width / 20
                     //anchors.fill: parent
                     MouseArea {

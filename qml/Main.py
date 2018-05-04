@@ -4,9 +4,12 @@ except: True
 
 import getpass
 
-
 import os
 import sys
+
+import threading
+
+import modules.BlueFunc
 
 if sys.version_info.major == 3:
     print("python Major version " + str(sys.version_info.major))
@@ -35,6 +38,7 @@ ldb = SqliteDatabase(data_dir + "/data.db")
 class Dialogs(Model):
     identification = CharField(primary_key = True)
     name = CharField()
+    status = CharField()
     
     class Meta:
         database = ldb
@@ -52,7 +56,7 @@ class Main:
     def __init__(self):
         print("init")
         
-        version = "5"
+        version = "7"
         if not os.path.exists(data_dir + "/version"):
             print("Writing new database")
             open(data_dir + "/version", "w").write("0")
@@ -69,18 +73,13 @@ class Main:
         try: ldb.create_tables([Dialogs])
         except: print("Dialogs table exists in ldb")    
         try: ldb.create_tables([Chats])
-        except: print("Chats table exists in ldb")     
-        
-        #try: migrate(local_migrator.add_column("Artikel", "groesse", CharField(default = "")))
-        #except: print("Artikel:groesse:existiert schon")
+        except: print("Chats table exists in ldb")   
            
         ldb.close()
-        
-        #pyotherside.send("changeFrame", "Dialogs")
 
         self.getDialogs()
-                         
-        self.tryConnect()
+             
+        t = threading.Thread(target = self.tryConnect)
         
         self.ChatPartner = ""
         self.ChatPartnerID = ""
@@ -141,7 +140,23 @@ class Main:
         AllDialogs = Dialogs.select()
         ldb.close() 
         for dialog in AllDialogs:
-            Dialoge.append({"name" : dialog.name, "user_id" : dialog.identification})
+            user_status = dialog.status
+            #UserStatusOffline(was_online=datetime.utcfromtimestamp(1525351401))
+            if "UserStatusOnline" in user_status: #Online
+                user_status = "green"
+                lastonlinetime = ""
+            else:
+                if user_status == "UserStatusRecently()": # Was online Recently
+                    user_status = "orange"
+                    lastonlinetime = ""
+                else:
+                    print("User Status is " + str(user_status))
+                    user_status = "red"
+                    lastonlinetime = ""
+                    if "UserStatusOffline" in dialog.status:
+                        lastonlinetime = modules.BlueFunc.ElapsedTime(dialog.status.split("UserStatusOffline(was_online=datetime.utcfromtimestamp(")[-1].replace("))", ""))
+            
+            Dialoge.append({"name" : dialog.name, "user_id" : dialog.identification, "status" : user_status, "timestamp" : lastonlinetime})
         
         print("pyotherside.send(antwortGetDialogs, " + str(Dialoge) + ")") 
         pyotherside.send("antwortGetDialogs", Dialoge)  
@@ -160,17 +175,28 @@ class Main:
             for dialog in self.client.get_dialogs():
                 dialog_name = utils.get_display_name(dialog.entity)
                 dialog_identification = dialog.entity.id
-                #print(dialog_identification)
+                try: dialog_status = dialog.entity.status
+                except: dialog_status = "0"
+                
+                #print(" ")
+                #print(dialog_name)
+                #print(dialog.entity)
+                #print(" ")
+                
                 Dialoge.append({"name": dialog_name})
                 #print("dialog.name " + str(dialog.name))
                 try: ldb.connect()
                 except: True
-                query = Dialogs.select().where((Dialogs.name == str(dialog_name)))
+                query = Dialogs.select().where((Dialogs.identification == str(dialog_identification)))
                 ldb.close()
                 if not query.exists():
-                    print("create Dialog entry")
-                    NewDialog = Dialogs.create(name = dialog_name, identification = dialog_identification)
+                    print("create Dialog entry " + dialog_name)
+                    NewDialog = Dialogs.create(name = dialog_name, identification = dialog_identification, status = dialog_status)
                     NewDialog.save()
+                else:
+                    print("Dialog Changed " + dialog_name)
+                    ChangedDialog = Dialogs(name = dialog_name, identification = dialog_identification, status = dialog_status)
+                    ChangedDialog.save()
                 
             #print("Dialoge: " + str(Dialoge))
             if not self.LastDialogList == Dialoge:
@@ -197,11 +223,13 @@ class Main:
             pyotherside.send("antwortGetChat", ChatList, self.ChatPartner)
             self.LastChatList = ChatList 
             self.ChatForceReload = False
+        else: 
+            print("LastChatList = ChatList")
         
     def reloadChat(self):
         print("reloadChat")
         try:
-            for message in self.client.get_messages(self.ChatPartner, limit=1):
+            for message in self.client.get_messages(self.ChatPartner, limit=10):
                 try: ldb.connect()
                 except: True
                 print("message.id " + str(message.id))

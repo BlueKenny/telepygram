@@ -15,30 +15,47 @@ Rectangle {
         chatModel.clear()
         for (var i=0; i<item.length; i++) {
             chatModel.append(item[i]);
+            listeChat.currentIndex = listeChat.count - 1
+            console.warn(listeChat.currentIndex)
         }
+
+
     }
 
+    Label {
+        text: "<"
+        x: 20
+        y: 20
+        font.pixelSize: mainWindow.width / 20
+
+    }
     Label {
         id: nameChatPartner
         text: "..."
         x: mainWindow.width / 2 - width / 2
+        y: 20
         font.pixelSize: mainWindow.width / 20
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                view.push(frameDialogs)
-                python.call('Main.main.getDialogs', [], function () {});
-            }
+    }
+    MouseArea {
+        id: backMouseArea
+        width: window.width
+        height: nameChatPartner.height + 40
+        onClicked: {
+            view.push(frameDialogs)
+            python.call('Main.main.getDialogs', [], function () {});
         }
     }
 
 
     ListView {
         id: listeChat
-        y: window.height / 10
+        y: backMouseArea.height * 2//150
         x: 20
         width: window.width - 2 * x
-        height: window.height * 0.7
+        height: window.height - y - textInput.height
+        highlightFollowsCurrentItem: true
+        highlightMoveDuration: 100
+        //highlight: Rectangle { color: "lightsteelblue"; width: window.width}
 
         ListModel {
             id: chatModel
@@ -51,18 +68,19 @@ Rectangle {
                 x: parent.x
                 width: parent.width
                 height: window.height / 6
+
                 MouseArea {
                     anchors.fill: parent
                     onClicked: liste.currentIndex = index
                 }
-                Label {
+                Text {
                     text: chattext
                     color: out ? "orange" : "blue"
                     x: parent.x
                     width: parent.width
                     font.pixelSize: mainWindow.width / 25
                     horizontalAlignment: out ? Text.AlignRight : Text.AlignLeft
-                    wrapMode: Label.WordWrap
+                    wrapMode: Text.WordWrap
                 }
             }
         }
