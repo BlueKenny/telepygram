@@ -222,6 +222,12 @@ class Main:
                 
             
         #except: print("getDialogs download failed")
+
+    def deleteProfilePhoto(self, id):
+        print("deleteProfilePhoto(" + str(id) + ")")
+        if os.path.exists(data_dir + "/Pictures/Profiles/" + str(id) + ".jpg"):        
+            os.remove(data_dir + "/Pictures/Profiles/" + str(id) + ".jpg")        
+        
     def downloadProfilePhoto(self, Entity):
         print("Start downloadProfilePhoto")
         Image = self.client.download_profile_photo(Entity, file=data_dir + "/Pictures/Profiles/" + str(Entity.id), download_big=True)
@@ -247,10 +253,28 @@ class Main:
         else: 
             print("LastChatList = ChatList")
         
-    def reloadChat(self):
+    def reloadChat(self, LoadNewMessages):
         print("reloadChat")
         if True:#try:
-            for message in self.client.get_messages(self.ChatPartner, limit=10):
+            print("LoadNewMessages: " + str(LoadNewMessages))
+            if LoadNewMessages:            
+                Messages = self.client.iter_messages(self.ChatPartner, limit=10)
+            else:
+                try: ldb.connect()
+                except: True
+
+                AllSavedMessages = Chats.select()  
+                SavedMessagesList = []
+                for msg in AllSavedMessages:
+                    SavedMessagesList.append(msg.identification)            
+                
+                ldb.close()
+                
+                LastMessageLoaded = int(min(SavedMessagesList))
+                Messages = self.client.iter_messages(self.ChatPartner, limit=1, offset_id=LastMessageLoaded)
+                
+            #for message in self.client.get_messages(self.ChatPartner, limit=1):
+            for message in Messages:
                 try: ldb.connect()
                 except: True
                 print("message.id " + str(message.id))
@@ -263,22 +287,39 @@ class Main:
                     message_text = message.message
                     if message_text == None: message_text = " "                  
                     
-                    print("User Name :" + str(self.client.get_entity(message.from_id)))
+                    #print("User Name :" + str(self.client.get_entity(message.from_id)))
                     names = []
-                    user_firstname = str(self.client.get_entity(message.from_id).first_name)
-                    user_lastname = str(self.client.get_entity(message.from_id).last_name)
+                    try: user_firstname = str(self.client.get_entity(message.from_id).first_name)
+                    except: user_firstname = self.ChatPartner
+                    try: user_lastname = str(self.client.get_entity(message.from_id).last_name)
+                    except: user_lastname = "None"
                     if not user_firstname == "None": names.append(user_firstname)
                     if not user_lastname == "None": names.append(user_lastname)
                     username = " ".join(names)
+                    
+                    username_id = str(message.from_id)
+                    #print("username_id: " + username_id)
                     
                     try: message_media = str(message.media)
                     except: message_media = " "
                     print("message_media: " + str(message_media))
                     # download_media(message, file=None, progress_callback=None)
                     
-                    NewChat = Chats.create(identification = message.id, chat_id = self.ChatPartnerID, user_name = username, user_id = message.from_id, text = message_text, out = message.out, media = message_media ,total_message = message)
-                    NewChat.save()
-                    self.getChat() 
+                    NewChat = Chats.create(identification = message.id, chat_id = self.ChatPartnerID, user_name = username, user_id = username_id, text = message_text, out = message.out, media = message_media ,total_message = message)
+                    NewChat.save()                  
+                    
+                    self.getChat()
+                    
+                try:# FOr test, later this should be only on new
+                  
+                    print("call_id: " + str(message.action.call_id))
+                    if str(message.action.reason) == "PhoneCallDiscardReasonMissed()":
+                            print("you get a phone call ")
+                            print("pyotherside.send(changeFrame, PhoneCall)")
+                            pyotherside.send("changeFrame", "PhoneCall")
+                    print("reason: " + str(message.action.reason))
+                except: True
+                 
         if False:#except:
             print("reloadChat Error")  
             self.tryConnect()  

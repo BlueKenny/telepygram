@@ -25,6 +25,7 @@ Rectangle {
         text: "<"
         x: 20
         y: 20
+        z: 1
         font.pixelSize: mainWindow.width / 20
 
     }
@@ -33,12 +34,14 @@ Rectangle {
         text: "..."
         x: mainWindow.width / 2 - width / 2
         y: 20
+        z: 1
         font.pixelSize: mainWindow.width / 20
     }
     MouseArea {
         id: backMouseArea
         width: window.width
         height: nameChatPartner.height + 40
+        z: 2
         onClicked: {
             view.push(frameDialogs)
             python.call('Main.main.getDialogs', [], function () {});
@@ -50,11 +53,24 @@ Rectangle {
         id: listeChat
         y: backMouseArea.height * 2//150
         x: 20
+        z: 0
         width: window.width - 2 * x
         height: window.height - y - textInput.height
         highlightFollowsCurrentItem: true
         highlightMoveDuration: 100
         //highlight: Rectangle { color: "lightsteelblue"; width: window.width}
+
+        onMovementEnded: {
+            console.warn("Move Stoped")
+            console.warn(listeChat.contentY)
+            if (listeChat.contentY < 50) {
+                // if Scroll to Start then Download More Messages
+
+                python.call('Main.main.reloadChat', [false], function () {});
+
+            }
+        }
+
 
         ListModel {
             id: chatModel
@@ -94,9 +110,21 @@ Rectangle {
         width: mainWindow.width
         height: mainWindow.height / 10
         font.pixelSize: mainWindow.width / 20
-        y: mainWindow.height - height
+        y: window.height - height
+
+
         onAccepted: {
             python.call('Main.main.sendChat', [text], function () {text = ""});
+            window.height = mainWindow.height
+        }
+        on__ContentWidthChanged: {
+            window.height = mainWindow.height * 0.55
+        }
+        onEditingFinished: {
+            window.height = mainWindow.height
+        }
+        onCursorPositionChanged: {
+            window.height = mainWindow.height * 0.55
         }
     }
 

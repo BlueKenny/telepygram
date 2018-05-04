@@ -10,7 +10,6 @@ ApplicationWindow {
     width: 500
     title: qsTr("Telepygram")
 
-
     Item {
         id: vars
         property string testString: ""
@@ -21,6 +20,11 @@ ApplicationWindow {
     }
 
     function changeFrame(frameSelect) {
+        if (frameSelect === "PhoneCall") {
+            timeDialogs.running = false
+            timeChat.running = false
+            view.push(framePhoneCall)
+        }
         if (frameSelect === "Phone") {
             timeDialogs.running = false
             timeChat.running = false
@@ -45,7 +49,7 @@ ApplicationWindow {
 
     Timer {
         id: timeDialogs
-        interval: 5000; running: true; repeat: true
+        interval: 5000; running: false; repeat: true
         onTriggered: {
             console.warn("timeDialogs")
             python.call('Main.main.reloadDialogs', [], function () {});
@@ -56,7 +60,7 @@ ApplicationWindow {
         interval: 5000; running: false; repeat: true
         onTriggered: {
             console.warn("timeChat")
-            python.call('Main.main.reloadChat', [], function () {});
+            python.call('Main.main.reloadChat', [true], function () {});
         }
     }
 
@@ -113,6 +117,10 @@ ApplicationWindow {
         Component {
             id: frameChat
             Chat {}
+        }
+        Component {
+            id: framePhoneCall
+            PhoneCall {}
         }
     }
 

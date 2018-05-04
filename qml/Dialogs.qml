@@ -68,6 +68,16 @@ Rectangle {
                     height: parent.height
                     width: parent.width / 4
                     x: progresscircle.x + progresscircle.width
+                    /*
+                    onStatusChanged: {
+                        console.warn("Image Status " + status + " of " + name)
+                        console.warn("Progress " + progress)
+                        if (status == 3) {
+                            if (progress == 1) {
+                                python.call('Main.main.deleteProfilePhoto', [chat_identification], function () {});
+                            }
+                        }
+                    }*/
                 }
 
                 Label {
