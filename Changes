@@ -1,0 +1,23 @@
+
++ 5/5/18 :
+    - General speed optimization
+    - Dialog: fix MouseArea to Open Chats
+    - Fix starting
++ 4/5/18 :
+    - PhoneCall: Initial Work in Progress, (detection works)
+    - Chat: Adapt layout if Keyboard is visible
+    - Chat: Initial support for loading Old message if you scroll to the top
+    - Chat: fix Loading messages that don't have a Username
+    - Chat: username are now displayed over messages
+    - Chat: Auto scrolling
+    - Small Fixes 
+    - Dialogs: Add Profile Pictures
+    - Chat: Add Back Button
+    - Chat: Fix Drawing of ListView
++ 3/5/18 :
+    - Fix fonts
+    - Last Online time is now displayed
+    - Online/Offline Status of user is now displayed
++ 2/5/18 :
+    - Open Dialogs and Chats are now Stored for Offline reading
+    - No Internet Connection required

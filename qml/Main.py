@@ -39,6 +39,7 @@ class Dialogs(Model):
     identification = CharField(primary_key = True)
     name = CharField()
     status = CharField()
+    dialog = CharField()
     
     class Meta:
         database = ldb
@@ -60,7 +61,7 @@ class Main:
     def __init__(self):
         print("init")
         
-        version = "14"
+        version = "15"
         if not os.path.exists(data_dir + "/version"):
             print("Writing new database")
             open(data_dir + "/version", "w").write("0")
@@ -189,12 +190,12 @@ class Main:
                 try: dialog_status = dialog.entity.status
                 except: dialog_status = "0"  
                 
-                print(" ")
-                print(dialog_name)
-                print(dialog.entity)
-                print(" ")
+                #print(" ")
+                #print(dialog_name)
+                #print(dialog.entity)
+                #print(" ")
                 
-                Dialoge.append({"name": dialog_name})
+                Dialoge.append({"name": dialog_name, "status" : dialog_status})
                 try: ldb.connect()
                 except: True
                 query = Dialogs.select().where((Dialogs.identification == str(dialog_identification)))
@@ -202,13 +203,13 @@ class Main:
                 if not query.exists():
                     print("create Dialog entry " + dialog_name)
                     threading.Thread(target = self.downloadProfilePhoto, args = [dialog.entity]).start()
-                    NewDialog = Dialogs.create(name = dialog_name, identification = dialog_identification, status = dialog_status)
+                    NewDialog = Dialogs.create(name = dialog_name, identification = dialog_identification, status = dialog_status, dialog = str(dialog))
                     NewDialog.save()
                 else:
                     # ToDO Test if changes
                     
-                    print("Dialog Changed " + dialog_name)
-                    ChangedDialog = Dialogs(name = dialog_name, identification = dialog_identification, status = dialog_status)
+                    #print("Dialog Changed " + dialog_name)
+                    ChangedDialog = Dialogs(name = dialog_name, identification = dialog_identification, status = dialog_status, dialog = str(dialog))
                     ChangedDialog.save()
                     
                     # if no Picture
@@ -230,7 +231,10 @@ class Main:
         
     def downloadProfilePhoto(self, Entity):
         print("Start downloadProfilePhoto")
+        print(" ")
+        print(Entity)
         Image = self.client.download_profile_photo(Entity, file=data_dir + "/Pictures/Profiles/" + str(Entity.id), download_big=True)
+        if str(Image) == "None": self.deleteProfilePhoto(Entity.id)        
         print("Image: " + str(Image))
 
     def sendChat(self, text):

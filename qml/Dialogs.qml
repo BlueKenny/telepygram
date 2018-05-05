@@ -86,14 +86,15 @@ Rectangle {
                     y: parent.height / 2 - height / 2
                     font.pixelSize: mainWindow.width / 20
                     //anchors.fill: parent
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            python.call('Main.main.SetChatPartner', [name, chat_identification], function () {});
-                            timeDialogs.running = false
-                            timeChat.running = true
-                            view.push(frameChat)
-                        }
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        python.call('Main.main.SetChatPartner', [name, chat_identification], function () {});
+                        timeDialogs.running = false
+                        timeChat.running = true
+                        view.push(frameChat)
+                        python.call('Main.main.reloadChat', [true], function () {});
                     }
                 }
                 Item {

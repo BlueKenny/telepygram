@@ -39,17 +39,19 @@ ApplicationWindow {
             timeDialogs.running = true
             timeChat.running = false
             view.push(frameDialogs)
+            python.call('Main.main.reloadDialogs', [], function () {});
         }
         if (frameSelect === "Chat") {
             timeDialogs.running = false
             timeChat.running = true
             view.push(frameChat)
+            python.call('Main.main.reloadChat', [true], function () {});
         }
     }
 
     Timer {
         id: timeDialogs
-        interval: 5000; running: false; repeat: true
+        interval: 10000; running: true; repeat: true
         onTriggered: {
             console.warn("timeDialogs")
             python.call('Main.main.reloadDialogs', [], function () {});
