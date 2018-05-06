@@ -116,7 +116,11 @@ class Main:
             if not isAuthorized:
                 pyotherside.send("changeFrame", "Phone")
                 print("pyotherside.send(changeFrame, Phone)")
-        except: print("tryConnect ERROR No Network?")    
+              
+            pyotherside.send("onlineStatus", True)
+        except:
+            print("tryConnect ERROR No Network?")    
+            pyotherside.send("onlineStatus", False)
     
     def SetChatPartner(self, name, id):
         print("SetChatPartner(name: " + str(name) + ", " + str(id) + ")")

@@ -28,8 +28,17 @@ Rectangle {
         text: "Telepygram"
         x: mainWindow.width / 2 - width / 2
         y: 20
-        z: 2
+        z: topPanelDialog.z + 1
         font.pixelSize: mainWindow.width / 20
+    }
+
+    Label {
+        id: labelStatus
+        text: vars.onlineStatus ? "You are Online" : "You are Offline"
+        color: vars.onlineStatus ? "green" : "red"
+        x: window.width - width
+        z: appTitle.z
+        transform: Rotation { origin.x: 0; origin.y: 0; axis { x: 1; y: 1; z: 1 } angle: 45 }
     }
 
     ListView {
@@ -48,6 +57,7 @@ Rectangle {
                 id: itemListe
                 width: window.width
                 height: window.height/6
+
                 MouseArea {
                     anchors.fill: parent
                     onClicked: liste.currentIndex = index
@@ -93,7 +103,6 @@ Rectangle {
                     x: profileImage.x + profileImage.width//window.width / 2 - width / 2
                     y: parent.height / 2 - height / 2
                     font.pixelSize: mainWindow.width / 20
-                    //anchors.fill: parent
                 }
                 MouseArea {
                     anchors.fill: parent

@@ -14,10 +14,15 @@ ApplicationWindow {
         id: vars
         property string testString: ""
         property bool keyboardVisible: true
+        property bool onlineStatus: false
     }
 
     function busy(status) {
         busyindicator.visible = status
+    }
+
+    function changeOnlineStatus(status) {
+        vars.onlineStatus = status
     }
 
     function changeFrame(frameSelect) {
@@ -146,6 +151,8 @@ ApplicationWindow {
             //
             //setHandler("busy", busy);
             setHandler("changeFrame", changeFrame);
+
+            setHandler("onlineStatus", changeOnlineStatus);
 
             //setHandler("antwortGetDialogs", view.currentItem.antwortGetDialogs);
         }

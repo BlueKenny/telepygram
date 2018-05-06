@@ -30,6 +30,7 @@ Rectangle {
     }
 
     Rectangle { // to hide the ListView in the Top
+        id: topPanelChat
         anchors.fill: backMouseArea
         z: 1
     }
@@ -37,7 +38,7 @@ Rectangle {
         text: "<"
         x: 20
         y: 20
-        z: 2
+        z: topPanelChat.z + 1
         font.pixelSize: mainWindow.width / 20
 
     }
@@ -46,18 +47,26 @@ Rectangle {
         text: "..."
         x: mainWindow.width / 2 - width / 2
         y: 20
-        z: 2
+        z: topPanelChat.z + 1
         font.pixelSize: mainWindow.width / 20
     }
     MouseArea {
         id: backMouseArea
         width: window.width
         height: nameChatPartner.height + 40
-        z: 3
+        z: nameChatPartner.z + 1
         onClicked: {
             view.push(frameDialogs)
             python.call('Main.main.getDialogs', [], function () {});
         }
+    }
+    Label {
+        id: labelStatus
+        text: vars.onlineStatus ? "You are Online" : "You are Offline"
+        color: vars.onlineStatus ? "green" : "red"
+        x: window.width - width
+        z: topPanelChat.z + 1
+        transform: Rotation { origin.x: 0; origin.y: 0; axis { x: 1; y: 1; z: 1 } angle: 45 }
     }
 
 
