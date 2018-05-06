@@ -9,6 +9,8 @@ import sys
 
 import threading
 
+import socket
+
 import modules.BlueFunc
 
 if sys.version_info.major == 3:
@@ -81,10 +83,6 @@ class Main:
         except: print("Chats table exists in ldb")   
            
         ldb.close()
-
-        self.getDialogs()
-             
-        threading.Thread(target = self.tryConnect).start()
         
         self.ChatPartner = ""
         self.ChatPartnerID = ""
@@ -94,7 +92,10 @@ class Main:
         
         if not os.path.exists(data_dir + "/Pictures"): os.mkdir(data_dir + "/Pictures")
         if not os.path.exists(data_dir + "/Pictures/Profiles"): os.mkdir(data_dir + "/Pictures/Profiles")
-        
+                
+        self.getDialogs()
+             
+        threading.Thread(target = self.tryConnect).start()
        
     def tryConnect(self):
         print("tryConnect")    
@@ -102,14 +103,15 @@ class Main:
         api_id = 291651
         api_hash = '0f734eda64f8fa7dea8ed9558fd447e9'
 
-        try:
-            self.client = TelegramClient(data_dir + "/telepygram.db", api_id, api_hash)
-            self.phoneNumber = ""
-
-            print("Waiting for connection")
-            isConnected = self.client.connect()
-            print("Connection: " + str(isConnected))
-
+        self.client = TelegramClient(data_dir + "/telepygram.db", api_id, api_hash)
+        self.phoneNumber = ""
+            
+        print("Connect to Telegram")
+        isConnected = self.client.connect()
+            
+        if isConnected:
+            pyotherside.send("onlineStatus", True)
+            
             isAuthorized = self.client.is_user_authorized()
             print("Authorized: " + str(isAuthorized))
 
@@ -117,9 +119,7 @@ class Main:
                 pyotherside.send("changeFrame", "Phone")
                 print("pyotherside.send(changeFrame, Phone)")
               
-            pyotherside.send("onlineStatus", True)
-        except:
-            print("tryConnect ERROR No Network?")    
+        else: 
             pyotherside.send("onlineStatus", False)
     
     def SetChatPartner(self, name, id):
@@ -279,7 +279,7 @@ class Main:
                 ldb.close()
                 
                 LastMessageLoaded = int(min(SavedMessagesList))
-                Messages = self.client.iter_messages(self.ChatPartner, limit=1, offset_id=LastMessageLoaded)
+                Messages = self.client.iter_messages(self.ChatPartner, limit=10, offset_id=LastMessageLoaded)
                 
             #for message in self.client.get_messages(self.ChatPartner, limit=1):
             for message in Messages:
@@ -330,6 +330,6 @@ class Main:
                  
         except:
             print("reloadChat Error")  
-            self.tryConnect()  
-
+            threading.Thread(target = self.tryConnect).start()
+         
 main = Main()
