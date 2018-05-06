@@ -1,6 +1,7 @@
-PhoneCalls testing: Thanks to Bruno
+
 + 6/5/18 :
-    - Chat: Top of list is now hide (some items where overlaying the Status bar)
+    - Online status in displayed in Top Panel
+    - Top of list is now hide (some items where overlaying the Top Panel)
     - Fix craching if App started without internet connection
 + 5/5/18 :
     - General speed optimization
