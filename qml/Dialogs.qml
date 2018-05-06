@@ -16,17 +16,25 @@ Rectangle {
         }
     }
 
-    Label {
-        id: labelSelectTitle
-        text: "Telepygram"
-        font.pixelSize: mainWindow.width / 20
-        x: mainWindow.width / 2 - width / 2
+    Rectangle {
+        id: topPanelDialog
+        width: window.width
+        height: appTitle.height + 40
+        z: 1
     }
 
+    Label {
+        id: appTitle
+        text: "Telepygram"
+        x: mainWindow.width / 2 - width / 2
+        y: 20
+        z: 2
+        font.pixelSize: mainWindow.width / 20
+    }
 
     ListView {
         id: listeDialogs
-        y: window.height / 10
+        y: topPanelDialog.height
         width: window.width
         height: window.height * 0.8
 

@@ -1,6 +1,7 @@
 PhoneCalls testing: Thanks to Bruno
-
-
++ 6/5/18 :
+    - Chat: Top of list is now hide (some items where overlaying the Status bar)
+    - Fix craching if App started without internet connection
 + 5/5/18 :
     - General speed optimization
     - Dialog: fix MouseArea to Open Chats
