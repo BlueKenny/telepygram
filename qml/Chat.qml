@@ -5,8 +5,18 @@ import QtQuick.Controls 1.1//2.2
 Rectangle {
     id: window
     height: mainWindow.height
-    width: mainWindow.width
+    //height:  Qt.inputMethod.visible ? mainWindow.height * 0.55 : mainWindow.height
 
+/*
+    anchors {
+        left: parent.left
+        top: parent.top
+        right: parent.right
+        // anchor to the top of KeyboardRectangle
+        // this ensures pages are always above the OSK
+        // Basically the same as anchorToKeyboard
+        bottom: kbdRect.top
+    }*/
 
     function antwortGetChat(item, username) {
         console.warn("QML antwortGetChat")
@@ -17,15 +27,17 @@ Rectangle {
             chatModel.append(item[i]);
             listeChat.currentIndex = listeChat.count - 1
         }
-
-
     }
 
+    Rectangle { // to hide the ListView in the Top
+        anchors.fill: backMouseArea
+        z: 1
+    }
     Label {
         text: "<"
         x: 20
         y: 20
-        z: 1
+        z: 2
         font.pixelSize: mainWindow.width / 20
 
     }
@@ -34,14 +46,14 @@ Rectangle {
         text: "..."
         x: mainWindow.width / 2 - width / 2
         y: 20
-        z: 1
+        z: 2
         font.pixelSize: mainWindow.width / 20
     }
     MouseArea {
         id: backMouseArea
         width: window.width
         height: nameChatPartner.height + 40
-        z: 2
+        z: 3
         onClicked: {
             view.push(frameDialogs)
             python.call('Main.main.getDialogs', [], function () {});
@@ -51,7 +63,7 @@ Rectangle {
 
     ListView {
         id: listeChat
-        y: backMouseArea.height * 2//150
+        y: backMouseArea.height//150
         x: 20
         z: 0
         width: window.width - 2 * x
@@ -111,8 +123,6 @@ Rectangle {
         height: mainWindow.height / 10
         font.pixelSize: mainWindow.width / 20
         y: window.height - height
-
-
         onAccepted: {
             python.call('Main.main.sendChat', [text], function () {text = ""});
             window.height = mainWindow.height

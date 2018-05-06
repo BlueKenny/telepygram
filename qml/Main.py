@@ -259,7 +259,7 @@ class Main:
         
     def reloadChat(self, LoadNewMessages):
         print("reloadChat")
-        if True:#try:
+        try:
             print("LoadNewMessages: " + str(LoadNewMessages))
             if LoadNewMessages:            
                 Messages = self.client.iter_messages(self.ChatPartner, limit=10)
@@ -324,7 +324,7 @@ class Main:
                     print("reason: " + str(message.action.reason))
                 except: True
                  
-        if False:#except:
+        except:
             print("reloadChat Error")  
             self.tryConnect()  
 

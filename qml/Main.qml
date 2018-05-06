@@ -13,6 +13,7 @@ ApplicationWindow {
     Item {
         id: vars
         property string testString: ""
+        property bool keyboardVisible: true
     }
 
     function busy(status) {
@@ -46,6 +47,16 @@ ApplicationWindow {
             timeChat.running = true
             view.push(frameChat)
             python.call('Main.main.reloadChat', [true], function () {});
+        }
+    }
+
+    KeyboardRectangle {
+        id: kbdRect
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        onScaleChanged: {
+            console.warn("Keyboard changed")
         }
     }
 

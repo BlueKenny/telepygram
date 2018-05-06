@@ -6,6 +6,7 @@ def ElapsedTime(timestamp):
 
     d = datetime.datetime.utcnow()
     epoch = datetime.datetime(1970,1,1)
+    print(epoch)
     timestampC = (d - epoch).total_seconds()
 
     timestamp = int(timestamp)
