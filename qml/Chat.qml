@@ -62,10 +62,11 @@ Rectangle {
     }
     Label {
         id: labelStatus
-        text: vars.onlineStatus ? "You are Online" : "You are Offline"
+        text: vars.onlineStatus ? "You are\nOnline" : "You are\nOffline"
         color: vars.onlineStatus ? "green" : "red"
         x: window.width - width
         z: topPanelChat.z + 1
+        font.pixelSize: mainWindow.width / 28
         transform: Rotation { origin.x: 0; origin.y: 0; axis { x: 1; y: 1; z: 1 } angle: 45 }
     }
 
