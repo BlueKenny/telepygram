@@ -29,27 +29,32 @@ ApplicationWindow {
         if (frameSelect === "PhoneCall") {
             timeDialogs.running = false
             timeChat.running = false
+            timeSending.running = false
             view.push(framePhoneCall)
         }
         if (frameSelect === "Phone") {
             timeDialogs.running = false
             timeChat.running = false
+            timeSending.running = false
             view.push(framePhoneNumber)
         }
         if (frameSelect === "Code") {
             timeDialogs.running = false
             timeChat.running = false
+            timeSending.running = false
             view.push(framePhoneCode)
         }
         if (frameSelect === "Dialogs") {
             timeDialogs.running = true
             timeChat.running = false
+            timeSending.running = true
             view.push(frameDialogs)
             python.call('Main.main.reloadDialogs', [], function () {});
         }
         if (frameSelect === "Chat") {
             timeDialogs.running = false
             timeChat.running = true
+            timeSending.running = true
             view.push(frameChat)
             python.call('Main.main.reloadChat', [true], function () {});
         }
@@ -67,7 +72,7 @@ ApplicationWindow {
 
     Timer {
         id: timeDialogs
-        interval: 10000; running: true; repeat: true
+        interval: 5000; running: true; repeat: true
         onTriggered: {
             console.warn("timeDialogs")
             python.call('Main.main.reloadDialogs', [], function () {});
@@ -79,6 +84,23 @@ ApplicationWindow {
         onTriggered: {
             console.warn("timeChat")
             python.call('Main.main.reloadChat', [true], function () {});
+        }
+    }
+    Timer {
+        id: timeSending
+        interval: 5000; running: true; repeat: true
+        onTriggered: {
+            console.warn("timeSending")
+            python.call('Main.main.trySending', [], function () {});
+        }
+    }
+
+    Timer {
+        id: timeCalls
+        interval: 1000; running: false; repeat: true
+        onTriggered: {
+            console.warn("timeCalls")
+            python.call('Main.main.receivedCall', [], function () {});
         }
     }
 

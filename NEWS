@@ -1,5 +1,21 @@
+Thanks to the @telepygramdevel group for Helping and Testing
+(@malditobastardo, Bruno, @Sconio, @cibersheep)
 
-+ 6/5/18 :
++ 7/5/18 - 8/5/18:
+    - Chat: Add loading Message
+    - Chat: Support for Stickers
+    - Chat: Support for Pictures
+    
+    - Work in progress of "Viewed Status"
+    - Chat: Messages that aren't yet send are show in the Message List
+    - Fix Online/Offline Switching
+    - Better Batterie saving
+    - Chat: Sending Text is now Stored and will be send if Possible
+    - Chat: Added User Join message
+    - Chat: Added User Join by invite link message
+    - Minimal Changes in Layout
+    - Dialogs: Waiting Message on first Start
+    - Chats: Message are now separated in Rectangles
     - Online status in displayed in Top Panel
     - Top of list is now hide (some items where overlaying the Top Panel)
     - Fix craching if App started without internet connection

@@ -1,0 +1,17 @@
+APP_ID = "$(click_package)_$(application)_$(version)"
+click_package = telepygram.bluekenny
+application = telepygram
+
+APP_ID = telepygram.bluekenny_telepygram
+
+QUOTED_PKGNAME = telepygram_2ebluekenny
+
+# REGISTRATION
+gdbus call --session --dest com.ubuntu.PushNotifications --object-path /com/ubuntu/PushNotifications/telepygram_2ebluekenny --method com.ubuntu.PushNotifications.Register telepygram.bluekenny_telepygram
+
+
+# PUSH A MESSAGE
+gdbus call --session --dest com.ubuntu.Postal --object-path /com/ubuntu/Postal/telepygram_2ebluekenny \
+ --method com.ubuntu.Postal.Post telepygram.bluekenny_telepygram \
+ '"{\"message\": \"foobar\", \"notification\":{\"card\": {\"summary\": \"yes\", \"body\": \"hello\", \"popup\": true, \"persist\": true}}}"'
+ 

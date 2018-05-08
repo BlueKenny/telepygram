@@ -21,25 +21,23 @@ Rectangle {
         width: window.width
         height: appTitle.height + 40
         z: 1
-    }
+        border.width: 2
+        Label {
+            id: appTitle
+            text: "Telepygram"
+            x: mainWindow.width / 2 - width / 2
+            y: 20
+            font.pixelSize: mainWindow.width / 20
+        }
 
-    Label {
-        id: appTitle
-        text: "Telepygram"
-        x: mainWindow.width / 2 - width / 2
-        y: 20
-        z: topPanelDialog.z + 1
-        font.pixelSize: mainWindow.width / 20
-    }
-
-    Label {
-        id: labelStatus
-        text: vars.onlineStatus ? "You are\nOnline" : "You are\nOffline"
-        color: vars.onlineStatus ? "green" : "red"
-        x: window.width - width
-        z: appTitle.z
-        font.pixelSize: mainWindow.width / 28
-        transform: Rotation { origin.x: 0; origin.y: 0; axis { x: 1; y: 1; z: 1 } angle: 45 }
+        Label {
+            id: labelStatus
+            text: vars.onlineStatus ? "You are\nOnline" : "You are\nOffline"
+            color: vars.onlineStatus ? "green" : "red"
+            x: window.width - width
+            font.pixelSize: mainWindow.width / 28
+            transform: Rotation { origin.x: 0; origin.y: 0; axis { x: 1; y: 1; z: 1 } angle: 45 }
+        }
     }
 
     ListView {
@@ -47,6 +45,7 @@ Rectangle {
         y: topPanelDialog.height
         width: window.width
         height: window.height * 0.8
+        z: topPanelDialog.z - 1
 
         ListModel {
             id: dialogsModel
@@ -84,9 +83,9 @@ Rectangle {
                     id: profileImage
                     source: data_dir + "/Pictures/Profiles/" + chat_identification + ".jpg"
                     asynchronous: true
-                    height: parent.height
-                    width: parent.width / 4
-                    x: progresscircle.x + progresscircle.width
+                    height: parent.height - 10
+                    width: parent.width / 4 - 20
+                    x: progresscircle.x + progresscircle.width + 10
                     /*
                     onStatusChanged: {
                         console.warn("Image Status " + status + " of " + name)

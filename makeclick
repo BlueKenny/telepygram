@@ -5,7 +5,12 @@ import time
 os.popen("clickable.py display-on &")
 
 manifest = open("manifest.json.in", "r").readlines()
-oldversion = manifest[11].split("\"")[3]
+
+for lines in manifest:
+    if "version" in lines: line = int(manifest.index(lines))
+
+
+oldversion = manifest[line].split("\"")[3]
 
 time = time.localtime(time.time())
 year = str(time.tm_year)
@@ -16,7 +21,7 @@ version = str(int(oldversion.split(".")[-1]) + 1)
 
 newversion = year + "." + month + "." + day + "." + version
 
-manifest[11] = manifest[11].replace(oldversion, newversion)
+manifest[line] = manifest[line].replace(oldversion, newversion)
 
 os.remove("manifest.json.in")
 
