@@ -15,6 +15,7 @@ ApplicationWindow {
         property string testString: ""
         property bool keyboardVisible: true
         property bool onlineStatus: false
+
     }
 
     function busy(status) {

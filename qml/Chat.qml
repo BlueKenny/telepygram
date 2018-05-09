@@ -2,6 +2,8 @@ import QtQuick 2.2
 import io.thp.pyotherside 1.2
 import QtQuick.Controls 1.1//2.2
 
+import QtQuick.Dialogs 1.0
+
 Rectangle {
     id: window
     height: mainWindow.height
@@ -18,15 +20,32 @@ Rectangle {
         bottom: kbdRect.top
     }*/
 
+    Item {
+        id: varsChat
+        property int chatListeLetzteAnzahl: 0
+        property int chatListeNeueAnzahl: 0
+    }
+
     function antwortGetChat(item, username) {
         console.warn("QML antwortGetChat")
         nameChatPartner.text = username
 
+        varsChat.chatListeLetzteAnzahl = chatModel.count
+        //varsChat.chatListeNeueAnzahl = 0
         chatModel.clear()
         for (var i=0; i<item.length; i++) {
             chatModel.append(item[i]);
-            listeChat.currentIndex = listeChat.count - 1
+            //varsChat.chatListeNeueAnzahl =+1
         }
+        varsChat.chatListeNeueAnzahl = chatModel.count
+
+        listeChat.currentIndex = listeChat.count - 1 //varsChat.chatListeNeueAnzahl - varsChat.chatListeLetzteAnzahl
+        console.warn(listeChat.currentIndex + "=" + varsChat.chatListeNeueAnzahl + "-" + varsChat.chatListeLetzteAnzahl)
+
+
+        //if (listeChat.visibleArea.yPosition == listeChat.) {
+        //    listeChat.currentIndex = listeChat.count - 1
+        //}
     }
 
     Rectangle { // to hide the ListView in the Top
@@ -70,7 +89,7 @@ Rectangle {
 
     ListView {
         id: listeChat
-        y: backMouseArea.height//150
+        y: backMouseArea.height
         x: 20
         z: topPanelChat.z - 1
         width: window.width - 2 * x
@@ -81,8 +100,8 @@ Rectangle {
 
         onMovementEnded: {
             console.warn("Move Stoped")
-            console.warn(listeChat.contentY)
-            if (listeChat.contentY < 50) {
+            console.warn("listeChat visibleArea.yPosition: " + listeChat.visibleArea.yPosition)
+            if (listeChat.visibleArea.yPosition == 0) {
                 // if Scroll to Start then Download More Messages
 
                 python.call('Main.main.reloadChat', [false], function () {});
@@ -159,7 +178,20 @@ Rectangle {
         onCursorPositionChanged: {
             window.height = mainWindow.height * 0.55
         }
-    }
+    }/*
+    FileDialog {
+        id: fileDialog
+        title: "Please choose a file"
+        folder: shortcuts.home
+        selectExisting: true
+        onAccepted: {
+            console.log("You chose: " + fileDialog.fileUrls)
+        }
+        onRejected: {
+            console.log("Canceled")
+        }
+        Component.onCompleted: visible = true
+    }*/
 
     Python {
         id: python

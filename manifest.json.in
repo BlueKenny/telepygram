@@ -7,9 +7,13 @@
         "telepygram": {
             "apparmor": "telepygram.apparmor",
             "desktop":  "telepygram.desktop"
+        },
+        "push": {
+            "apparmor": "apparmor-push.json",
+            "push-helper": "push-helper.json"
         }
     },
-    "version": "2018.5.8.234",
+    "version": "2018.5.9.253",
     "maintainer": "Zaunz Kenny <bluez@linuxmail.org>",
     "framework" : "ubuntu-sdk-15.04.5"
 }

@@ -98,19 +98,30 @@ class Main:
            
         ldb.close()
         
+        self.isConnected = False
         self.ChatPartner = ""
         self.ChatPartnerID = ""
         self.ChatForceReload = False
         self.LastChatList = ""
         self.LastDialogList = ""
-                
+              
+        self.threadTryConnect = threading.Thread(name="Connect", target = self.Connect, args=())  
+        
         self.getDialogs()
              
-        threading.Thread(target = self.tryConnect)
+        self.tryConnect()
            
-       
     def tryConnect(self):
-        print("tryConnect")    
+        print("tryConnect")   
+        print(threading.enumerate())   
+        if not self.threadTryConnect.isAlive():
+            print("starting Thread Connect")
+            self.threadTryConnect.start()
+        else:
+            print("Waiting for Connection, Thread Connect is Already running")
+       
+    def Connect(self):
+        print("Connect") 
     
         api_id = 291651
         api_hash = '0f734eda64f8fa7dea8ed9558fd447e9'
@@ -197,13 +208,7 @@ class Main:
     def reloadDialogs(self):
         print("reloadDialogs function in Main.py")
         
-        #print("self.client.get_me(): \n")
-        #print(self.client.get_me())
-        #print("")
- 
-        isConnect = self.tryConnect()
-        
-        if isConnect:
+        try:
             Dialoge = []
             for dialog in self.client.get_dialogs():
                 dialog_name = utils.get_display_name(dialog.entity)
@@ -242,7 +247,9 @@ class Main:
                 self.LastDialogList = Dialoge
                 self.getDialogs()
             
-        else: print("getDialogs failed, no connection")
+        except: 
+            print("getDialogs failed, no connection ?")
+            self.tryConnect()
 
     def deleteProfilePhoto(self, id):
         print("deleteProfilePhoto(" + str(id) + ")")
@@ -253,12 +260,14 @@ class Main:
         print("Start downloadProfilePhoto")
         print(" ")
         print(Entity)
-        isConnect = self.tryConnect()
-        if isConnect:
+        
+        try:
             Image = self.client.download_profile_photo(Entity, file=data_dir + "/Pictures/Profiles/" + str(Entity.id), download_big=True)
             #if str(Image) == "None": self.deleteProfilePhoto(Entity.id)        
             print("Image: " + str(Image))
-        else: print("downloadProfilePhoto failed no connection")
+        except:
+            print("downloadProfilePhoto failed no connection ?")
+            self.tryConnect()
 
     def sendChat(self, message):
         try: ldb.connect()
@@ -268,9 +277,8 @@ class Main:
         ldb.close()
         self.getChat()
     
-    def trySending(self):       
-        isConnect = self.tryConnect()
-        if isConnect:   
+    def trySending(self):  
+        try:
             try: ldb.connect()
             except: True     
             query = Uploads.select()
@@ -282,8 +290,9 @@ class Main:
                 except:
                     print("Error Sending")
             ldb.close()
-        else: print("trySending failed, no connection")
-        
+        except:
+            print("trySending failed, no connection ?")
+            self.tryConnect()
     
     def getChat(self):
         print("getChat")
@@ -296,7 +305,7 @@ class Main:
             ChatList.append({"chattext": "LOADING\nPLEASE WAIT", "out": True, "sender" : "Telepygram", "read" : False, "media" : "", "with_media" : False})
         else:
             for message in AllChats:    
-                if message.media == "None": with_media = False
+                if message.media == "": with_media = False
                 else: with_media = True
                 ChatList.append({"chattext": message.text, "out": message.out, "sender" : message.user_name, "read" : False, "media" : message.media, "with_media" : with_media})
         
@@ -316,7 +325,7 @@ class Main:
         
     def reloadChat(self, LoadNewMessages):
         print("reloadChat")
-        try:
+        if True:#try:
             print("LoadNewMessages: " + str(LoadNewMessages))
             if LoadNewMessages:            
                 Messages = self.client.iter_messages(self.ChatPartner, limit=10)
@@ -324,7 +333,7 @@ class Main:
                 try: ldb.connect()
                 except: True
 
-                AllSavedMessages = Chats.select()  
+                AllSavedMessages = Chats.select().where(Chats.chat_id == self.ChatPartnerID)
                 SavedMessagesList = []
                 for msg in AllSavedMessages:
                     SavedMessagesList.append(msg.identification)            
@@ -332,6 +341,7 @@ class Main:
                 ldb.close()
                 
                 LastMessageLoaded = int(min(SavedMessagesList))
+                print("LastMessageLoaded: " + str(LastMessageLoaded))
                 Messages = self.client.iter_messages(self.ChatPartner, offset_id=LastMessageLoaded, limit=10)
                 
             for message in Messages:
@@ -369,20 +379,22 @@ class Main:
                     
                     try: message_media = str(message.media)
                     except: message_media = "None"
-                    if not message_media == "None":
+                    if not str(message_media) == "None":
                         print("message_media: " + str(message_media))
                         file = data_dir + "/Media/" + str(message.id)
                         file = self.client.download_media(message.media, file=file, progress_callback=None)
                         message_media = file
+                        
+                    else: message_media = ""
                     
-                    NewChat = Chats.create(identification = message.id, chat_id = self.ChatPartnerID, user_name = username, user_id = username_id, text = message_text, out = message.out, media = message_media ,total_message = message)
+                    NewChat = Chats.create(identification = message.id, chat_id = self.ChatPartnerID, user_name = username, user_id = username_id, text = message_text, out = message.out, media = str(message_media) ,total_message = message)
                     NewChat.save()                  
                     
                     self.getChat()
                  
-        except:
-            print("reloadChat Error")  
-            threading.Thread(target = self.tryConnect)
+        #except:
+        #    print("reloadChat Error")
+        #    self.tryConnect()
     
    
 main = Main()

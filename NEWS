@@ -1,11 +1,18 @@
 Thanks to the @telepygramdevel group for Helping and Testing
 (@malditobastardo, Bruno, @Sconio, @cibersheep)
 
++ 9/5/18:
+    TODO Video PREVIEW
+    TODO PDF Preview
+    TODO Chat position saving
+    - Chat: fix Reload of Old Messages
+    - Chat: Phone can Now Download Pictures and Stickers
+    - Alot of little fixes
+    
 + 7/5/18 - 8/5/18:
     - Chat: Add loading Message
     - Chat: Support for Stickers
     - Chat: Support for Pictures
-    
     - Work in progress of "Viewed Status"
     - Chat: Messages that aren't yet send are show in the Message List
     - Fix Online/Offline Switching
