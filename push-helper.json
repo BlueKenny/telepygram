@@ -1,4 +1,4 @@
 {
-    "exec": "push",
+    "exec": "push/push.py",
     "app_id": "telepygram.bluekenny_telepygram"
 }

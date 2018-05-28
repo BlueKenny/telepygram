@@ -36,6 +36,11 @@ execute_process(
 configure_file(manifest.json.in ${CMAKE_CURRENT_BINARY_DIR}/manifest.json)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/manifest.json DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(FILES ${PROJECT_NAME}.apparmor DESTINATION ${DATA_DIR})
+
+install(FILES push-helper.json DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(FILES apparmor-push.json DESTINATION ${CMAKE_INSTALL_PREFIX})
+install(DIRECTORY push DESTINATION ${DATA_DIR})
+
 install(DIRECTORY qml DESTINATION ${DATA_DIR})
 install(DIRECTORY assets DESTINATION ${DATA_DIR})
 

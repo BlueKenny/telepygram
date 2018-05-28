@@ -11,7 +11,9 @@ gdbus call --session --dest com.ubuntu.PushNotifications --object-path /com/ubun
 
 
 # PUSH A MESSAGE
-gdbus call --session --dest com.ubuntu.Postal --object-path /com/ubuntu/Postal/telepygram_2ebluekenny \
- --method com.ubuntu.Postal.Post telepygram.bluekenny_telepygram \
- '"{\"message\": \"foobar\", \"notification\":{\"card\": {\"summary\": \"yes\", \"body\": \"hello\", \"popup\": true, \"persist\": true}}}"'
+ gdbus call --session --dest com.ubuntu.Postal --object-path /com/ubuntu/Postal/telepygram_2ebluekenny --method com.ubuntu.Postal.Post telepygram.bluekenny_telepygram '"{\"message\": \"foobar\", \"notification\":{\"card\": {\"summary\": \"yes\", \"body\": \"hello\", \"popup\": true, \"persist\": true}}}"'
  
+ gdbus call --session --dest com.ubuntu.Postal --object-path /com/ubuntu/Postal/telepygram_2ebluekenny --method com.ubuntu.Postal.Post telepygram.bluekenny_telepygram '"{\"message\": \"foobar\", \"notification\":{\"card\": {\"summary\": \"yes\", \"body\": \"hello\", \"popup\": true, \"persist\": true}}}"'
+ 
+ 
+ {"message":{"loc_key":"MESSAGE_TEXT","loc_args":["Karni","asdf"],"custom":{"msg_id":"37","from_id":"48674673"}},"notification":{"tag":"chat","card":{"summary":"Karni","body":"asdf","popup":true,"persist":true},"sound":"buzz.mp3","vibrate":{"pattern":[200,100],"duration":200,"repeat":2},"emblem-counter":{"count":2,"visible":true}}}

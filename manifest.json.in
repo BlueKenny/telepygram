@@ -13,7 +13,7 @@
             "push-helper": "push-helper.json"
         }
     },
-    "version": "2018.5.9.253",
+    "version": "2018.5.21.350",
     "maintainer": "Zaunz Kenny <bluez@linuxmail.org>",
-    "framework" : "ubuntu-sdk-15.04.5"
+    "framework" : "ubuntu-sdk-16.04"
 }

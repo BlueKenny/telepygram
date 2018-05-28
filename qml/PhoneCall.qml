@@ -6,6 +6,7 @@ Rectangle {
     id: window
     height: mainWindow.height
     width: mainWindow.width
+    color: vars.backgroundColor
 
     Label {
         id: labelSelectTitle
@@ -13,5 +14,6 @@ Rectangle {
         font.pixelSize: mainWindow.width / 20
         x: window.width / 2 - width / 2
         y: window.height / 5
+        color: vars.textColor
     }
 }

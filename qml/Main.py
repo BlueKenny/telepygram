@@ -21,7 +21,7 @@ if sys.version_info.major == 3:
         sys.path.append("modules/lib/python3.6/site-packages/")
         sys.path.append("qml/modules/lib64/python3.6/site-packages/")
         sys.path.append("qml/modules/lib/python3.6/site-packages/")
-    if sys.version_info.minor == 4:
+    if sys.version_info.minor == 4 or sys.version_info.minor == 5:
         print("python Minor version " + str(sys.version_info.minor))
         sys.path.append("modules/lib/python3.4/site-packages/")
         sys.path.append("qml/modules/lib/python3.4/site-packages/")
@@ -29,6 +29,7 @@ if sys.version_info.major == 3:
 import typing
 import encodings
 from telethon import TelegramClient, utils, events
+from telethon.tl.functions.users import GetFullUserRequest
 #from telethon import *
 
 
@@ -240,7 +241,7 @@ class Main:
                     
                     # if no Picture
                     if not os.path.exists(data_dir + "/Pictures/Profiles/" + str(dialog_identification) + ".jpg"):
-                        threading.Thread(target = self.downloadProfilePhoto, args = [dialog.entity])
+                        threading.Thread(target = self.downloadProfilePhoto, args = [dialog.entity]).start()
                 
             #print("Dialoge: " + str(Dialoge))
             if not self.LastDialogList == Dialoge:
@@ -305,9 +306,25 @@ class Main:
             ChatList.append({"chattext": "LOADING\nPLEASE WAIT", "out": True, "sender" : "Telepygram", "read" : False, "media" : "", "with_media" : False})
         else:
             for message in AllChats:    
-                if message.media == "": with_media = False
-                else: with_media = True
-                ChatList.append({"chattext": message.text, "out": message.out, "sender" : message.user_name, "read" : False, "media" : message.media, "with_media" : with_media})
+                if message.media == "":
+                    with_media = False
+                    media_is_video = False
+                    media_is_image = False
+                else:
+                    with_media = True
+                    medianame = str(message.media).split("/")[-1]
+                    mediaformat = medianame.split(".")[-1]
+                    
+                    know_videos = ["ogv", "3gp"]
+                    if mediaformat in know_videos:
+                        media_is_video = True
+                        media_is_image = False
+                    else:
+                        media_is_video = False
+                        media_is_image = True
+                                                    
+                
+                ChatList.append({"media_is_video": media_is_video, "media_is_image": media_is_image, "chattext": message.text, "out": message.out, "sender" : message.user_name, "read" : False, "media" : message.media, "with_media" : with_media})
         
         query = Uploads.select().where(Uploads.chat_id == self.ChatPartnerID).order_by(Uploads.id)
         ldb.close()  
@@ -325,7 +342,10 @@ class Main:
         
     def reloadChat(self, LoadNewMessages):
         print("reloadChat")
-        if True:#try:
+        if True:#try:     
+            Dialog = GetFullUserRequest(self.client.get_entity(int(self.ChatPartnerID)))
+            print("This Dialog " + str(Dialog))
+        
             print("LoadNewMessages: " + str(LoadNewMessages))
             if LoadNewMessages:            
                 Messages = self.client.iter_messages(self.ChatPartner, limit=10)
@@ -382,8 +402,11 @@ class Main:
                     if not str(message_media) == "None":
                         print("message_media: " + str(message_media))
                         file = data_dir + "/Media/" + str(message.id)
-                        file = self.client.download_media(message.media, file=file, progress_callback=None)
-                        message_media = file
+                        try: 
+                            file = self.client.download_media(message.media, file=file, progress_callback=None)
+                            message_media = file
+                        except:
+                            print("Error in Downlaod")                        
                         
                     else: message_media = ""
                     

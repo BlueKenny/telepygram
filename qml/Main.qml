@@ -3,18 +3,32 @@ import io.thp.pyotherside 1.2
 import QtQuick.Controls 1.1//2.2
 //import Ubuntu.Components 1.3
 
+//import Ubuntu.PushNotifications 0.1
+
 ApplicationWindow {
 //Rectangle {
     id: mainWindow
     height: 500
     width: 500
     title: qsTr("Telepygram")
+/*
+    PushClient {
+        id: pushClient
+        Component.onCompleted: {
+            notificationsChanged.connect(messageList.handle_notifications)
+            error.connect(messageList.handle_error)
+        }
+        appId: "telepygram.bluekenny_telepygram"
+    }*/
 
     Item {
         id: vars
         property string testString: ""
         property bool keyboardVisible: true
         property bool onlineStatus: false
+        property string backgroundColorPanel: "#38393C"
+        property string backgroundColor: "#4a4b4f"
+        property string textColor: "#F5F5F5"
 
     }
 

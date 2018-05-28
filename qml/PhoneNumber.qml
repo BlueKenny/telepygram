@@ -6,6 +6,7 @@ Rectangle {
     id: window
     height: mainWindow.height
     width: mainWindow.width
+    color: vars.backgroundColor
 
     Label {
         id: labelSelectTitle
@@ -13,6 +14,7 @@ Rectangle {
         font.pixelSize: mainWindow.width / 20
         x: window.width / 2 - width / 2
         y: window.height / 5
+        color: vars.textColor
     }
     TextField {
         id: textPhoneNumberNum
@@ -23,6 +25,7 @@ Rectangle {
         font.pixelSize: mainWindow.width / 20
         inputMethodHints: Qt.ImhDigitsOnly
         horizontalAlignment: TextEdit.AlignHCenter
+        //textColor: vars.textColor
 
         text: "+"
         onAccepted: {
