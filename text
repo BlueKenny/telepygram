@@ -1,0 +1,5 @@
+pip3 install --ignore-installed --prefix=/home/kenny/telepygram/qml/modules/ telethon
+
+
+apt-get install python3-pip
+pip3 install --ignore-installed --install-option="--install-purelib=/home/phablet/Downloads/aaa/" --user telethon
